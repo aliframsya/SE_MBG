@@ -314,7 +314,6 @@ return [
 
     'menu' => [
 
-
         // Navbar items:
         [
             'type' => 'navbar-search',
@@ -341,7 +340,6 @@ return [
             'text' => 'Dashboard',
             'icon' => 'fas fa-chart-line',
             'route' => 'dashboard.index',
-
         ],
 
         // MASTER
@@ -355,7 +353,6 @@ return [
                     'route' => 'master.kitchen.index',
                     'can' => 'master.kitchen.view',
                 ],
-
                 [
                     'text' => 'Supplier',
                     'icon' => 'fas fa-store',
@@ -368,7 +365,6 @@ return [
                     'route' => 'master.region.index',
                     'can' => 'master.region.view',
                 ],
-
                 [
                     'text' => 'Satuan',
                     'icon' => 'fas fa-sort-numeric-up',
@@ -380,9 +376,7 @@ return [
                     'icon' => 'fas fa-money-bill-wave',
                     'route' => 'master.bank.view',
                     'can' => 'master.bank.view'
-                    // 'can' => 'master.bank-account.view',
                 ],
-
                 [
                     'text' => 'Bahan Baku',
                     'icon' => 'fas fa-fw fa-carrot',
@@ -395,7 +389,6 @@ return [
                     'route' => 'master.operational.index',
                     'can' => 'master.operational.view',
                 ],
-
                 [
                     'text' => 'Nama Menu',
                     'icon' => 'fas fa-fw fa-book-open',
@@ -410,28 +403,18 @@ return [
             'text' => 'Setup Data',
             'icon' => 'fas fa-fw fa-tools',
             'submenu' => [
-
                 [
                     'text' => 'User',
                     'icon' => 'fas fa-fw fa-users',
                     'route' => 'setup.user.index',
                     'can' => 'setup.user.view',
                 ],
-
                 [
                     'text' => 'Role',
                     'icon' => 'fas fa-user-cog',
                     'route' => 'setup.role.index',
                     'can' => 'setup.role.view',
                 ],
-
-                // [
-                //     'text' => 'Racik Menu',
-                //     'icon' => 'fas fa-fw fa-blender',
-                //     'route' => 'recipe.index',
-                //     'can' => 'recipe.view',
-                // ],
-
             ],
         ],
 
@@ -440,14 +423,12 @@ return [
             'text' => 'Transaksi',
             'icon' => 'fas fa-fw fa-exchange-alt',
             'submenu' => [
-
                 [
                     'text' => 'Pengajuan Menu',
                     'icon' => 'fas fa-fw fa-paper-plane',
                     'route' => 'transaction.submission.index',
                     'can'  => 'transaction.submission.view',
                 ],
-
                 [
                     'text' => 'Daftar Permintaan',
                     'icon' => 'fas fa-clipboard-list',
@@ -466,20 +447,10 @@ return [
                     'route' => 'transaction.operational-approval.index',
                     'can'  => 'transaction.operational-approval.view',
                 ],
-
-                // [
-                //     'text' => 'Beli Bahan Baku',
-                //     'icon' => 'fas fa-cart-plus',
-                //     'route' => 'transaction.purchase-materials.index',
-                //     'can'   => 'transaction.purchase.view',
-                // ],
                 [
                     'text' => 'Beli Operasional',
                     'icon' => 'fas fa-cart-plus',
-                    // 'route' => 'transaction.purchase-operational.index',
-                    // 'can'   => 'transaction.purchase.view',
                 ],
-
             ],
         ],
 
@@ -488,76 +459,29 @@ return [
             'text' => 'Laporan',
             'icon' => 'fas fa-fw fa-file-alt',
             'submenu' => [
-
-                [
-                    'text' => 'Penjualan Dapur',
-                    'icon' => 'fas fa-file-signature',
-                    'route' => 'transaction.sale-materials-kitchen.index',
-                    'can'   => 'transaction.sale-kitchen.view',
-                ],
-
-                [
-                    'text' => 'Penjualan Mitra',
-                    'icon' => 'fas fa-file-signature',
-                    'route' => 'transaction.sale-materials-partner.index',
-                    'can'   => 'transaction.sale-partner.view',
-                ],
                 [
                     'text' => 'Bahan Baku Dapur',
                     'icon' => 'fas fa-file-signature',
                     'route' => 'report.sales-kitchen',
                     'can'   => 'report.sales-kitchen.view',
                 ],
-
-                [
-                    'text' => 'Bahan Baku Mitra',
-                    'icon' => 'fas fa-file-signature',
-                    'route' => 'report.sales-partner',
-                    'can'   => 'report.sales-partner.view',
-                ],
-
                 [
                     'text' => 'Pembelian Operasional',
                     'icon' => 'fas fa-file-signature',
                     'route' => 'report.purchase-operational',
                     'can'   => 'report.purchase-operational.view',
                 ],
-
-                [
-                    'text' => 'Selisih Penjualan',
-                    'icon' => 'fas fa-file-signature',
-                    'route' => 'report.sales-profit',
-                    'can'   => 'report.sales-profit.view',
-                ],
-
                 [
                     'text' => 'Selisih Bahan Baku',
                     'icon' => 'fas fa-file-signature',
                     'route' => 'report.profit',
                     'can'   => 'report.profit.view',
                 ],
-
-                // Pastikan strukturnya diletakkan berurutan dengan Total Penjualan agar rapi
                 [
                     'text' => 'Total Operasional',
                     'url'  => 'dashboard/laporan/total-operasional',
                     'icon' => 'fas fa-fw fa-file-invoice-dollar',
-                    'can'  => 'report.total-operational.view', // samakan string permission ini dengan middleware routingnya
-                ],
-
-
-                [
-                    'text' => 'Total Penjualan',
-                    'icon' => 'fas fa-file-signature',
-                    'route' => 'report.sales-summary-new',
-                    'can'   => 'report.sales-summary-new.view',
-                ],
-
-                [
-                    'text' => 'Total Penjualan & Selisih',
-                    'icon' => 'fas fa-file-signature',
-                    'route' => 'report.sales-summary',
-                    'can'   => 'report.sales-summary.legacy',
+                    'can'  => 'report.total-operational.view',
                 ],
             ],
         ],
