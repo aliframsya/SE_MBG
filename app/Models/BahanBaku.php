@@ -11,7 +11,9 @@ class BahanBaku extends Model
     use HasFactory, SoftDeletes;
 
     protected $table = 'bahan_baku';
-    protected $fillable = ['kode', 'nama', 'harga', 'kitchen_id',];
+    
+    // Tambahin 'qty' di dalam array fillable ini
+    protected $fillable = ['kode', 'nama', 'harga', 'kitchen_id', 'qty'];
 
     public function kitchen()
     {

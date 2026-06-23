@@ -7,7 +7,6 @@ use App\Models\Supplier;
 use App\Models\Submission;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
-
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -17,6 +16,7 @@ class DashboardController extends Controller
         $user = auth()->user();
         $month = $request->query('month');
         $selectedKitchen = $request->get('kitchen', 'all');
+
         // ==========================
         // 1️⃣ Filter Kitchen
         // ==========================
@@ -30,6 +30,7 @@ class DashboardController extends Controller
             })
             ->select('id', 'nama')
             ->get();
+
         // ==========================
         // 2️⃣ Summary
         // ==========================
@@ -47,17 +48,21 @@ class DashboardController extends Controller
         $recentActivity = $this->getRecentActivity($user);
         $topKitchen = $this->getTopKitchenByNominal($kitchenIds, $month);
 
-        // if ($user->hasRole('superadmin')) {
-        //     $topKitchen = $this->getTopKitchenByNominal($kitchenIds);
-        // }
-
-        $topKitchen = $this->getTopKitchenByNominal($kitchenIds, $month);
         $topBahanBaku = $this->getTopBahanBaku($kitchenIds, $month, $selectedKitchen);
 
         // array of kitchen ids the user can access (all if superadmin)
         $userKitchenIds = $kitchenIds === null
             ? Kitchen::pluck('id')->toArray()
             : $kitchenIds;
+
+        // ==========================
+        // 5️⃣ Notifikasi Stok Menipis
+        // ==========================
+        // Ambil data bahan baku yang qty-nya di bawah 10
+        $lowStockMaterials = DB::table('bahan_baku')
+            ->where('qty', '<', 10)
+            ->select('nama as nama_bahan', 'qty as stok')
+            ->get();
 
         return view('dashboard', compact(
             'summary',
@@ -67,7 +72,8 @@ class DashboardController extends Controller
             'recentActivity',
             'topKitchen',
             'topBahanBaku',
-            'userKitchenIds'
+            'userKitchenIds',
+            'lowStockMaterials'
         ));
     }
 
@@ -99,32 +105,16 @@ class DashboardController extends Controller
     protected function getSummary($kitchenIds)
     {
         return Cache::remember('dashboard_summary_' . auth()->id(), 30, function () use ($kitchenIds) {
-
             $submissionBase = $this->filterKitchen(Submission::query()->whereNull('parent_id'), $kitchenIds);
             return [
-                'total_kitchen' => $kitchenIds === null
-                    ? Kitchen::count()
-                    : count($kitchenIds),
-
-                'total_supplier' => $kitchenIds === null
-                    ? Supplier::count()
-                    : Supplier::whereHas('kitchens', function ($q) use ($kitchenIds) {
-                        $q->whereIn('kitchens.id', $kitchenIds);
-                    })->count(),
-
+                'total_kitchen' => $kitchenIds === null ? Kitchen::count() : count($kitchenIds),
+                'total_supplier' => $kitchenIds === null ? Supplier::count() : Supplier::whereHas('kitchens', function ($q) use ($kitchenIds) {
+                    $q->whereIn('kitchens.id', $kitchenIds);
+                })->count(),
                 'total_submission' => (clone $submissionBase)->count(),
-
-                'diajukan' => (clone $submissionBase)
-                    ->where('status', 'diajukan')
-                    ->count(),
-
-                'selesai' => (clone $submissionBase)
-                    ->where('status', 'selesai')
-                    ->count(),
-
-                'diproses' => (clone $submissionBase)
-                    ->where('status', 'diproses')
-                    ->count(),
+                'diajukan' => (clone $submissionBase)->where('status', 'diajukan')->count(),
+                'selesai' => (clone $submissionBase)->where('status', 'selesai')->count(),
+                'diproses' => (clone $submissionBase)->where('status', 'diproses')->count(),
             ];
         });
     }
@@ -135,20 +125,15 @@ class DashboardController extends Controller
 
     protected function getMonthlySubmission($kitchenIds)
     {
-        $query = Submission::selectRaw("
-                MONTH(created_at) as month,
-                COUNT(*) as total
-            ")
+        $query = Submission::selectRaw("MONTH(created_at) as month, COUNT(*) as total")
             ->whereNull('parent_id')
             ->whereYear('created_at', now()->year)
             ->groupBy('month')
             ->orderBy('month');
 
         $query = $this->filterKitchen($query, $kitchenIds);
-
         $data = $query->pluck('total', 'month')->toArray();
 
-        // Supaya 12 bulan selalu ada
         $months = [];
         for ($i = 1; $i <= 12; $i++) {
             $months[$i] = $data[$i] ?? 0;
@@ -163,18 +148,12 @@ class DashboardController extends Controller
 
     protected function getStatusChart($kitchenIds)
     {
-        $query = Submission::selectRaw("
-                status,
-                COUNT(*) as total_count,
-                SUM(total_harga) as total_rupiah
-            ")
+        $query = Submission::selectRaw("status, COUNT(*) as total_count, SUM(total_harga) as total_rupiah")
             ->whereNull('parent_id')
-            // Opsional: Jika kamu hanya ingin membatasi 3 status itu saja yang muncul
             ->whereIn('status', ['diajukan', 'diproses', 'selesai'])
             ->groupBy('status');
 
         $query = $this->filterKitchen($query, $kitchenIds);
-
         return $query->get();
     }
 
@@ -201,14 +180,9 @@ class DashboardController extends Controller
 
     protected function getTopKitchenByNominal($kitchenIds, $month = null)
     {
-        // Hapus Cache::remember sementara untuk testing
         $query = Submission::query()
-            ->selectRaw("
-                kitchen_id,
-                SUM(total_harga) as total_nominal,
-                COUNT(id) as total_submission
-            ")
-            ->where('status', 'selesai') // Fokus ke status selesai saja dulu
+            ->selectRaw("kitchen_id, SUM(total_harga) as total_nominal, COUNT(id) as total_submission")
+            ->where('status', 'selesai')
             ->groupBy('kitchen_id')
             ->orderByDesc('total_nominal')
             ->with('kitchen');
@@ -228,29 +202,14 @@ class DashboardController extends Controller
     protected function getTopBahanBaku($kitchenIds, $month = 'all', $selectedKitchen = 'all')
     {
         $user = auth()->user();
-
         $cacheKey = 'dashboard_top_bahan_' . $user->id . '_' . ($month ?? 'all') . '_' . ($selectedKitchen ?? 'all');
 
         return Cache::remember($cacheKey, 60, function () use ($kitchenIds, $month, $selectedKitchen, $user) {
-
-            // when superadmin requests "all" kitchens we want to merge bahan baku
-            // records with the same name regardless of id (there may be duplicates)
             $aggregateByName = $user->hasRole('superadmin') && $selectedKitchen === 'all';
 
             $baseSelect = $aggregateByName
-                ? "
-                    b.nama as nama_bahan,
-                    SUM(sd.qty_digunakan) as total_qty,
-                    COUNT(sd.id) as total_penggunaan,
-                    GROUP_CONCAT(DISTINCT k.nama SEPARATOR ', ') as daftar_dapur
-                "
-                : "
-                    b.id,
-                    ANY_VALUE(b.nama) as nama_bahan,
-                    SUM(sd.qty_digunakan) as total_qty,
-                    COUNT(sd.id) as total_penggunaan,
-                    GROUP_CONCAT(DISTINCT k.nama SEPARATOR ', ') as daftar_dapur
-                ";
+                ? "b.nama as nama_bahan, SUM(sd.qty_digunakan) as total_qty, COUNT(sd.id) as total_penggunaan, GROUP_CONCAT(DISTINCT k.nama SEPARATOR ', ') as daftar_dapur"
+                : "b.id, ANY_VALUE(b.nama) as nama_bahan, SUM(sd.qty_digunakan) as total_qty, COUNT(sd.id) as total_penggunaan, GROUP_CONCAT(DISTINCT k.nama SEPARATOR ', ') as daftar_dapur";
 
             $query = DB::table('submission_details as sd')
                 ->join('submissions as s', 'sd.submission_id', '=', 's.id')
@@ -261,35 +220,23 @@ class DashboardController extends Controller
                 ->whereNotNull('s.parent_id')
                 ->where('parent.status', 'selesai');
 
-            // group depending on chosen aggregation
             if ($aggregateByName) {
                 $query->groupBy('b.nama');
             } else {
                 $query->groupBy('b.id');
             }
 
-            $query->orderByDesc('total_qty')
-                  ->limit(10);
+            $query->orderByDesc('total_qty')->limit(10);
 
-            // ========================
-            // Filter bulan
-            // ========================
             if ($month && $month !== 'all') {
-                $query->whereMonth('s.created_at', $month)
-                    ->whereYear('s.created_at', now()->year);
+                $query->whereMonth('s.created_at', $month)->whereYear('s.created_at', now()->year);
             }
 
-            // ========================
-            // Filter dapur
-            // ========================
             if ($user->hasRole('superadmin')) {
-                // superadmin may choose a specific kitchen or "all"
                 if ($selectedKitchen !== 'all') {
                     $query->where('s.kitchen_id', $selectedKitchen);
                 }
             } else {
-                // regular users should only see their own kitchens by default
-                // if they picked one of their kitchens explicitly, apply that too
                 if ($selectedKitchen !== 'all' && $kitchenIds !== null && in_array($selectedKitchen, $kitchenIds)) {
                     $query->where('s.kitchen_id', $selectedKitchen);
                 } elseif ($kitchenIds !== null) {

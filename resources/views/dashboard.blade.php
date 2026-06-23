@@ -15,6 +15,29 @@
 
 @section('content')
 
+{{-- ================= NOTIFIKASI STOK MENIPIS ================= --}}
+@if(isset($lowStockMaterials) && $lowStockMaterials->count() > 0)
+    <div class="row">
+        <div class="col-md-12 mb-3">
+            <div class="alert alert-danger alert-dismissible fade show shadow-sm border-0" role="alert" style="border-radius: 12px;">
+                <h5><i class="icon fas fa-exclamation-triangle"></i> Peringatan! Stok Bahan Baku Menipis</h5>
+                <p class="mb-2">Beberapa bahan baku berikut memiliki stok di bawah 10 unit dan perlu segera disuplai:</p>
+                <ul class="mb-0 pl-4">
+                    @foreach($lowStockMaterials as $bahan)
+                        <li>
+                            <strong>{{ $bahan->nama_bahan ?? 'Nama tidak ditemukan' }}</strong>: Sisa stok tinggal 
+                            <span class="badge badge-warning font-weight-bold px-2 py-1">{{ $bahan->stok ?? 0 }}</span>
+                        </li>
+                    @endforeach
+                </ul>
+                <button type="button" class="close text-white" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+    </div>
+@endif
+
 {{-- ================= SUMMARY CARDS ================= --}}
 <div class="row">
     <div class="col-lg-3 col-6">
@@ -171,8 +194,7 @@
 </div>
 @endrole
 
-<!-- <div class="row"> -->
-    {{-- ================= TOP BAHAN BAKU ================= --}}
+{{-- ================= TOP BAHAN BAKU ================= --}}
     <div class="col-md-12">
         <div class="card shadow-sm border-0 h-100">
             <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
@@ -273,9 +295,6 @@
         </div>
     </div>
     @endrole
-<!-- </div> -->
-
-
 @stop
 
 @section('css')
@@ -408,10 +427,8 @@
     });
 
     // ================= TOP BAHAN BAKU CHART =================
-    // Data dari Laravel
     const bahanData = @json($topBahanBaku);
 
-    // Fungsi untuk memecah string panjang menjadi array agar teks bertumpuk
     const wrapLabel = (label, maxLength = 6) => {
         const words = label.split(' ');
         const lines = [];
@@ -434,27 +451,24 @@
     const labels = bahanData.map(item => wrapLabel(item.nama_bahan));
     const values = bahanData.map(item => item.total_qty);
 
-    
-    
-    // Kita gunakan Horizontal Bar agar nama bahan yang panjang lebih mudah dibaca
     new Chart(document.getElementById('bahanBakuChart'), {
         type: 'bar', 
         data: {
             labels: bahanData.map(item => item.nama_bahan),
             datasets: [{
                 label: 'Total Qty',
-                data: bahanData.map(item => item.total_qty), // Total Qty di Sumbu Y
-                backgroundColor: '#007bff', // Warna ungu transparan
+                data: bahanData.map(item => item.total_qty),
+                backgroundColor: '#007bff',
                 borderColor: '#007bff',
                 borderWidth: 1,
                 borderRadius: 5,
-                barThickness: 'flex', // Ukuran batang fleksibel mengikuti lebar wadah
-                maxBarThickness: 50   // Batas maksimal lebar batang agar tidak terlalu gemuk
+                barThickness: 'flex',
+                maxBarThickness: 50
             }]
         },
         options: {
             responsive: true,
-            maintainAspectRatio: false, // PENTING: Agar chart mengikuti tinggi container (350px)
+            maintainAspectRatio: false,
             plugins: {
                 legend: { display: false },
                 tooltip: {
@@ -468,7 +482,7 @@
             },
             layout: {
                 padding: {
-                    bottom: 20 // Memberi ruang tambahan di bawah untuk teks bertumpuk
+                    bottom: 20
                 }
             },
             scales: {
@@ -481,7 +495,7 @@
                 grid: { display: false },
                 ticks: {
                     autoSkip: false,
-                    maxRotation: 0, // Paksa tetap horizontal
+                    maxRotation: 0,
                     minRotation: 0,
                     font: { size: 12 },
                     padding: 6
@@ -491,8 +505,6 @@
         }
     });
 
-    
-    // Handler Filter (Redirect otomatis saat dropdown diganti)
     document.getElementById('filterMonthBahan').addEventListener('change', refreshFilter);
     document.getElementById('filterKitchenBahan').addEventListener('change', refreshFilter);
 
@@ -500,10 +512,8 @@
         const month = document.getElementById('filterMonthBahan').value;
         const kitchen = document.getElementById('filterKitchenBahan').value;
         
-        // Ambil URL dasar tanpa query string yang lama
         const baseUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
         window.location.href = `${baseUrl}?month=${month}&kitchen=${kitchen}`;
     }
-
 </script>
 @stop
