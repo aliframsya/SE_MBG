@@ -1,0 +1,279 @@
+@extends('adminlte::page')
+
+@section('title', 'Bahan Baku')
+
+@section('css')
+    <link rel="stylesheet" href="{{ asset('css/notification-pop-up.css') }}">
+@endsection
+
+@section('content_header')
+    <h1>Data Bahan Baku Masakan</h1>
+@endsection
+
+@section('content')
+
+    <div class="row mb-3 align-items-center">
+        <div class="col-md-3 mb-3 mb-md-0">
+            @can('master.bahan-baku.create')
+                <x-button-add idTarget="#modalAddMaterials" text="Tambah Bahan Baku" />  
+            @endcan
+        </div>
+
+        <div class="col-md-9">
+            <div class="d-flex flex-column flex-md-row justify-content-md-end align-items-md-center">
+                <form action="{{ route('dashboard.master.bahan-baku.index') }}" method="GET" class="mr-3 " style="max-width: 300px;">
+                    <div class="input-group">
+                        <input type="text" name="search" class="form-control mb-2 mb-md-0 mr-md-1" placeholder="Cari nama atau kode..." value="{{ request('search') }}">
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fa fa-search"></i>
+                            </button>
+                            @if(request('search'))
+                                <a href="{{ route('dashboard.master.bahan-baku.index') }}" class="btn btn-danger">
+                                    <i class="fa fa-times"></i>
+                                </a>
+                            @endif
+                    </div>
+                </form>
+
+                <form action="{{ route('dashboard.master.bahan-baku.index') }}" method="GET" class="form-inline mb-2 mb-md-0 mr-md-3">
+                    <label class="mr-2 sr-only">Dapur</label>
+                    <select name="kitchen_kode" class="form-control mr-2 mb-2 mb-md-0">
+                        <option value="">Semua Dapur</option>
+                        @foreach ($kitchens as $kitchen)
+                            <option value="{{ $kitchen->kode }}" 
+                                {{ request('kitchen_kode') == $kitchen->kode ? 'selected' : '' }}>
+                                {{ $kitchen->nama }}
+                            </option>
+                        @endforeach
+                    </select>
+                    
+                    <button type="submit" class="btn btn-primary mr-2 mb-2 mb-md-0">
+                        <i class="fa fa-filter"></i> Filter
+                    </button>
+                    <a href="{{ route('dashboard.master.bahan-baku.index') }}" class="btn btn-danger mb-2 mb-md-0">
+                        <i class="fa fa-undo"></i> Reset
+                    </a>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    {{-- @if (session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif --}}
+    <x-notification-pop-up />
+
+    <div class="card">
+        <div class="card-body">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th width="5%">No</th>
+                        <th>Kode</th>
+                        <th>Nama Bahan</th>
+                        <!-- <th>Satuan</th> -->
+                        {{-- <th>Harga Satuan</th> --}}
+                        <th>Dapur</th>
+                        @canAny('master.bahan-baku.update') 
+                        <th>Aksi</th>
+                        @endcanany
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($items as $index => $item)
+                        <tr>
+                            <td>{{ $items->firstItem() + $index }}</td>
+                            <td>{{ $item->kode }}</td>
+                            <td>{{ $item->nama }}</td>
+                            <td>{{ $item->kitchen->nama ?? '-' }}</td>
+                            @can( 'master.bahan-baku.update')
+                            <td>
+                                {{-- BUTTON EDIT --}}
+                                <button type="button" class="btn btn-warning btn-sm btnEditMaterials"
+                                    data-id="{{ $item->id }}" data-kode="{{ $item->kode }}"
+                                    data-nama="{{ $item->nama }}"
+                                    data-harga="{{ $item->harga }}" data-dapur-id="{{ $item->kitchen_id }}"
+                                    data-old-kode="{{ $item->kode }}" data-old-dapur-id="{{ $item->kitchen_id }}"
+                                    data-toggle="modal" data-target="#modalEditMaterials">
+                                    Edit
+                                </button>
+                            </td>
+                            @endcan
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="7" class="text-center">Belum ada data bahan baku</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                {{-- Per Page (KIRI) --}}
+                <form method="GET" class="mb-0">
+                    <input type="hidden" name="search" value="{{ request('search') }}">
+                    <input type="hidden" name="kitchen_kode" value="{{ request('kitchen_kode') }}">
+            
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text">
+                            Tampilkan
+                        </span>
+            
+                        <select
+                            name="per_page"
+                            class="form-select form-select-sm"
+                            onchange="this.form.submit()"
+                            style="max-width: 90px"
+                        >
+                            @foreach([10,25,50,100] as $size)
+                                <option
+                                    value="{{ $size }}"
+                                    {{ request('per_page',10) == $size ? 'selected' : '' }}
+                                >
+                                    {{ $size }}
+                                </option>
+                            @endforeach
+                        </select>
+            
+                        <span class="input-group-text">
+                            data
+                        </span>
+                    </div>
+                </form>
+                <div class="mt-3 d-flex justify-content-end">
+                    {{ $items->links('pagination::bootstrap-4') }}
+                </div>
+            </div>    
+        </div>
+    </div>
+
+    <form id="reloadForm" method="GET" action="">
+        <input type="hidden" name="kitchen_id" id="reloadKitchenId">
+    </form>
+
+    {{-- MODAL ADD MATERIALS --}}
+    <x-modal-form id="modalAddMaterials" title="Tambah Bahan Baku"
+        action="{{ route('dashboard.master.bahan-baku.index') }}" submitText="Simpan">
+        <div class="form-group">
+            <label>Kode</label>
+            <input id="kode_bahan" type="text" class="form-control" name="kode" readonly required>
+        </div>
+        <div class="form-group">
+            <label>Nama Bahan</label>
+            <input type="text" placeholder="Bawang Merah" class="form-control" name="nama" required>
+        </div>
+
+        <div class="form-group mt-2">
+            <label>Dapur</label>
+            <select name="kitchen_id" class="form-control" required>
+                <option value="" disabled selected>Pilih Dapur</option>
+                @foreach ($kitchens as $kitchen)
+                    <option value="{{ $kitchen->id }}">{{ $kitchen->nama }} ({{ $kitchen->kode }})</option>
+                @endforeach
+            </select>
+        </div>
+    </x-modal-form>
+
+    {{-- MODAL EDIT --}}
+    <x-modal-form id="modalEditMaterials" title="Edit Bahan Baku" action="" submitText="Update">
+        @method('PUT')
+
+        <div class="form-group">
+            <label>Kode</label>
+            <input id="editKodeBahan" type="text" class="form-control" name="kode" readonly required>
+        </div>
+
+        <div class="form-group">
+            <label>Nama Bahan</label>
+            <input id="editBahan" type="text" placeholder="Bawang Merah" class="form-control" name="nama" required>
+        </div>
+
+        <div class="form-group mt-2">
+            <label>Dapur</label>
+            <select id="editDapur" name="kitchen_id" class="form-control" required>
+                <option value="" disabled selected>Pilih Dapur</option>
+                @foreach ($kitchens as $kitchen)
+                    <option value="{{ $kitchen->id }}">{{ $kitchen->nama }} ({{ $kitchen->kode }})</option>
+                @endforeach
+            </select>
+        </div>
+    </x-modal-form>
+
+    {{-- MODAL DELETE --}}
+    <x-modal-delete id="modalDeleteMaterials" formId="formDeleteMaterials" title="Konfirmasi Hapus"
+        message="Apakah Anda yakin ingin menghapus data ini?" confirmText="Hapus" />
+@endsection
+
+@push('js')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const kodeInput = document.getElementById('kode_bahan');
+            const kitchenSelect = document.querySelector('select[name="kitchen_id"]');
+            const generatedCodes = @json($generatedCodes);
+
+            // Logic Generate Kode saat Tambah
+            if(kitchenSelect){
+                kitchenSelect.addEventListener('change', function() {
+                    const kitchenId = this.value;
+                    kodeInput.value = generatedCodes[kitchenId] || "";
+                });
+            }
+
+            let oldKitchenId = null;
+            let oldKode = null;
+
+            // --- PERBAIKAN DI SINI ---
+            document.querySelectorAll('.btnEditMaterials').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.dataset.id;
+                    
+                    // 1. UPDATE ACTION FORM (Lakukan ini paling awal agar aman)
+                    // Pastikan URL sesuai dengan route update Anda
+                    let urlUpdate = "{{ route('dashboard.master.bahan-baku.index') }}/" + id;
+                    document.querySelector('#modalEditMaterials form').action = urlUpdate;
+
+                    // 2. Ambil data dari tombol
+                    oldKitchenId = this.dataset.oldDapurId;
+                    oldKode = this.dataset.oldKode;
+
+                    // 3. Isi Field Input (Gunakan pengecekan if agar tidak error jika elemen hilang)
+                    if(document.getElementById('editKodeBahan')) {
+                        document.getElementById('editKodeBahan').value = oldKode;
+                    }
+                    
+                    if(document.getElementById('editBahan')) {
+                        document.getElementById('editBahan').value = this.dataset.nama;
+                    }
+
+                    // if(document.getElementById('editSatuan')) {
+                    //     document.getElementById('editSatuan').value = this.dataset.satuanId;
+                    // }
+
+                    // PENTING: Cek dulu apakah editHarga ada di HTML sebelum di-set value-nya
+                    if(document.getElementById('editHarga')) {
+                        document.getElementById('editHarga').value = this.dataset.harga;
+                    }
+
+                    if(document.getElementById('editDapur')) {
+                        document.getElementById('editDapur').value = oldKitchenId;
+                    }
+                });
+            });
+
+            // Logic Ubah Kode saat Edit Dapur diganti
+            const editDapur = document.getElementById('editDapur');
+            if(editDapur) {
+                editDapur.addEventListener('change', function() {
+                    const selectedKitchenId = this.value;
+                    if (selectedKitchenId == oldKitchenId) {
+                        document.getElementById('editKodeBahan').value = oldKode;
+                        return;
+                    }
+                    const kodeBaru = generatedCodes[selectedKitchenId] || "";
+                    document.getElementById('editKodeBahan').value = kodeBaru;
+                });
+            }
+        });
+    </script>
+@endpush

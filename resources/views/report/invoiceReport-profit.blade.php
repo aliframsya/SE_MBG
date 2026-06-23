@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laporan Selisih Pembelian</title>
+
+    {{-- ===== STYLE SAMA DENGAN PURCHASE ===== --}}
+    <style>
+        @page {
+            size: landscape;
+            /* margin: 1cm; */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            /* background: #f5f5f5; */
+        }
+
+        .invoice-container {
+            max-width: 100%;
+            /* margin: 0; */
+            background: white;
+            padding: 30px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #333;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .invoice-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .info-box {
+            flex: 1;
+        }
+
+        .info-box h3 {
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 5px;
+        }
+
+        .info-box p {
+            color: #666;
+            font-size: 14px;
+            margin: 0px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            /* margin-bottom: 20px; */
+            /* padding: 3px */
+        }
+
+        table thead {
+            background: #333;
+            color: white;
+        }
+
+        table th {
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        table td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table th,
+        table td {
+            padding: 8px 4px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .total-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #333;
+        }
+
+        .total-row.grand-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .invoice-container {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+
+<div class="invoice-container">
+
+    {{-- HEADER --}}
+    <table class="layout-table" style="border-bottom: 3px double #000; margin-bottom: 20px;">
+            <tr>
+                <td style="width: 20%; text-align: center; vertical-align: top; margin-bottom: 50px;">
+                    {{-- Ganti path logo_bgn_mbg.png sesuai lokasi file Anda --}}
+                    <img src="{{('icon_mbg.png') }}" alt="Logo BGN" style="height: 80px; width: 80px; object-fit: contain; margin-bottom: 20px;">
+                </td>
+
+                <td style="width: 60%; text-align: center; vertical-align: middle;">
+                    <h1 style="margin: 0; text-transform: uppercase;">Laporan Selisih</h1>
+                    <h1 style="margin: 0; text-transform: uppercase;">Bahan Baku Dapur</h1>
+                </td>
+
+                <td style="width: 20%; text-align: center; vertical-align: top;">
+                @php
+                    $relativePath = ltrim($submission->supplier->gambar, '/');
+                    $logoPath = storage_path('app/public/' . $relativePath);
+                @endphp
+                
+                @if(file_exists($logoPath))
+                    <img src="{{ $logoPath }}"
+                         width="100"
+                         style="object-fit: contain;">
+                @endif
+            </td>
+            </tr>
+        </table>
+
+    {{-- INFO --}}
+    <div class="invoice-info">
+        <div class="info-box">
+            <h3>Informasi Laporan</h3>
+            <p><strong>Total bahan Baku:</strong> {{ $reports->count() }}</p>
+            <p><strong>Dicetak:</strong> {{ now()->locale('id')->isoFormat('DD MMMM YYYY') }}</p>
+        </div>
+
+        {{-- <div class="info-box">
+            <h3>Detail Transaksi</h3>
+            <p><strong>Tanggal:</strong>
+                {{ \Carbon\Carbon::parse($submission->tanggal)->locale('id')->isoFormat('DD MMMM YYYY') }}
+            </p>
+            <p><strong>Dapur:</strong> {{ $submission->kitchen->nama ?? '-' }}</p>
+            <p><strong>Status:</strong> {{ strtoupper($submission->status) }}</p>
+        </div> --}}
+    </div>
+
+    {{-- TABLE --}}
+    <table>
+        <thead>
+            <tr>
+                <th>Tanggal Pengajuan</th>
+                <th>Dapur</th>
+                <th>Supplier</th>
+                <th>Subtotal Dapur</th>
+                <th>Subtotal Mitra</th>
+                <th>Selisih</th>
+            </tr>
+        </thead>
+        <tbody>
+            @php
+                $grandTotal = 0;
+            @endphp
+
+
+            @foreach ($reports as $index => $item)
+                <tr>
+                    <td>{{ \Carbon\Carbon::parse($item->submission->tanggal)->locale('id')->isoFormat('DD MMM YYYY') }}</td>
+                    <td>{{ $item->submission->kitchen->nama}}</td>
+                    <td>
+                        @if ($item->submission->supplier_id)
+                            {{ optional($item->submission->supplier)->nama }}
+                        @else-
+
+                        @endif
+                    </td>
+                    <td>Rp {{ number_format($item->subtotal_dapur ?? 0, 0, ',', '.') }}</td>
+                    <td>Rp {{ number_format($item->subtotal_mitra ?? 0, 0, ',', '.') }}</td>
+                    <td>Rp {{ number_format($item->selisih ?? 0, 0, ',', '.') }}</td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+
+    {{-- TOTAL --}}
+    @if ($reports->count() > 0)
+        <div class="total-section">
+            <div class="total-row grand-total">
+                <span>TOTAL SELISIH:</span>
+                <span>Rp {{ number_format($totalPageSubtotal, 0, ',', '.') }}</span>
+            </div>
+        </div>
+    @endif
+
+    {{-- FOOTER --}}
+    <div class="footer">
+        <p>Terima kasih atas kerja samanya</p>
+        <p>Invoice ini dibuat secara otomatis oleh sistem</p>
+    </div>
+
+</div>
+</body>
+
+</html>
