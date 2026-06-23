@@ -1,0 +1,270 @@
+@extends('adminlte::page')
+
+@section('title', 'Nama Menu')
+
+@section('css')
+    <link rel="stylesheet" href="{{ asset('css/notification-pop-up.css') }}">
+@endsection
+
+@section('content_header')
+    <h1>Data Nama Menu Dapur </h1>
+@endsection
+
+@section('content')
+    {{-- BUTTON ADD --}}
+
+    <div class="row mb-3">
+        @can('master.menu.create')
+            <div class="col-md-6">
+                <x-button-add idTarget="#modalAddMenu" text="Tambah Nama Menu" />
+            </div>
+        @endcan
+
+        <div class="col-md-6">
+            <form action="{{ route('master.menu.index') }}" method="GET">
+                <div class="input-group">
+                    <input type="text" name="search" class="form-control" placeholder="Cari nama menu atau kode..."
+                        value="{{ request('search') }}">
+                    <div class="input-group-append">
+                        <button class="btn btn-primary" type="submit">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        @if (request('search'))
+                            <a href="{{ route('master.menu.index') }}" class="btn btn-danger">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        @endif
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <x-notification-pop-up />
+
+    {{-- TABLE --}}
+    <div class="card mt-2">
+        <div class="card-body">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th width="5%">No</th>
+                        <th>Kode Menu</th> {{-- Tambah kolom kode menu --}}
+                        <th>Dapur</th>
+                        <th>Nama Menu</th>
+                        @canany(['master.menu.update', 'master.menu.delete'])
+                            <th>Aksi</th>
+                        @endcanany
+
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($items as $index => $item)
+                        <tr>
+                            <td>{{ $items->firstItem() + $index }}</td>
+                            <td>{{ $item->kode }}</td> {{-- Kode menu --}}
+                            <td>{{ $item->kitchen->nama ?? '-' }}</td>
+                            <td>{{ $item->nama }}</td>
+                            @canany(['master.menu.update', 'master.menu.delete'])
+                                <td>
+                                    @can('master.menu.update')
+                                        <button type="button" class="btn btn-warning btn-sm btnEditMenu"
+                                            data-id="{{ $item->id }}" data-kode="{{ $item->kode }}"
+                                            data-nama="{{ $item->nama }}" data-dapur-id="{{ $item->kitchen_id }}"
+                                            data-old-kode="{{ $item->kode }}" data-old-dapur-id="{{ $item->kitchen_id }}"
+                                            data-is-used="{{ $item->recipes_count > 0 ? 'true' : 'false' }}" data-toggle="modal"
+                                            data-target="#modalEditMenu">
+                                            Edit
+                                        </button>
+                                    @endcan
+
+                                    @if ($item->recipes_count > 0)
+                                        <button class="btn btn-danger btn-sm"
+                                            onclick="alert('Menu tidak bisa dihapus karena sudah memiliki resep.')">
+                                            <i class="fa fa-lock"></i>
+                                            <span> Hapus</span>
+                                        </button>
+                                    @else
+                                        @can('master.menu.delete')
+                                            <x-button-delete idTarget="#modalDeleteMenu" formId="formDeleteMenu"
+                                                action="{{ route('master.menu.destroy', $item->id) }}" text="Hapus" />
+                                        @endcan
+
+                                </td>
+                            @endcanany
+                    @endif
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="5" class="text-center">Belum ada menu</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                {{-- Per Page (KIRI) --}}
+                <form method="GET" class="mb-0">
+                    <input type="hidden" name="search" value="{{ request('search') }}">
+            
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text">
+                            Tampilkan
+                        </span>
+            
+                        <select
+                            name="per_page"
+                            class="form-select form-select-sm"
+                            onchange="this.form.submit()"
+                            style="max-width: 90px"
+                        >
+                            @foreach([10,25,50,100] as $size)
+                                <option
+                                    value="{{ $size }}"
+                                    {{ request('per_page',10) == $size ? 'selected' : '' }}
+                                >
+                                    {{ $size }}
+                                </option>
+                            @endforeach
+                        </select>
+            
+                        <span class="input-group-text">
+                            data
+                        </span>
+                    </div>
+                </form>
+            
+                {{-- Pagination (KANAN) --}}
+                <div>
+                    {{ $items->links('pagination::bootstrap-4') }}
+                </div>
+            
+            </div>
+        </div>
+    </div>
+
+    {{-- MODAL ADD MENU --}}
+    <x-modal-form id="modalAddMenu" title="Tambah Nama Menu" action="{{ route('master.menu.store') }}" submitText="Simpan">
+        <div class="form-group">
+            <label>Kode</label>
+            <input id="kode_menu" type="text" class="form-control" name="kode" readonly required />
+        </div>
+
+        <div class="form-group">
+            <label>Nama Menu</label>
+            <input type="text" placeholder="Mie Ayam" class="form-control" name="nama" required />
+        </div>
+
+        <div class="form-group mt-2">
+            <label>Pilih Dapur</label>
+            <select name="kitchen_id" class="form-control" required>
+                <option value="" disabled selected>Pilih Dapur</option>
+                @foreach ($kitchens as $kitchen)
+                    <option value="{{ $kitchen->id }}">{{ $kitchen->nama }} ({{ $kitchen->kode }})</option>
+                @endforeach
+            </select>
+        </div>
+    </x-modal-form>
+
+    {{-- MODAL EDIT --}}
+    <x-modal-form id="modalEditMenu" title="Edit Menu" action="" submitText="Update">
+        @method('PUT')
+
+        <div class="form-group">
+            <label>Kode</label>
+            <input id="editKodeMenu" type="text" class="form-control" name="kode" readonly required />
+        </div>
+
+        <div class="form-group">
+            <label>Nama Menu</label>
+            <input id="editMenu" type="text" class="form-control" name="nama" required />
+        </div>
+
+        <div class="form-group">
+            <label>Dapur</label>
+            <select id="editDapur" class="form-control" name="kitchen_id" required>
+                <option value="" disabled selected>Pilih Dapur</option>
+                @foreach ($kitchens as $kitchen)
+                    <option value="{{ $kitchen->id }}">{{ $kitchen->nama }} ({{ $kitchen->kode }})</option>
+                @endforeach
+            </select>
+        </div>
+    </x-modal-form>
+
+    {{-- MODAL DELETE --}}
+    <x-modal-delete id="modalDeleteMenu" formId="formDeleteMenu" title="Konfirmasi Hapus"
+        message="Apakah Anda yakin ingin menghapus Data ini?" confirmText="Hapus" />
+@endsection
+
+@push('js')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const kodeInput = document.getElementById('kode_menu');
+            const kitchenSelect = document.querySelector('select[name="kitchen_id"]');
+
+            const generatedCodes = @json($generatedCodes);
+
+            kitchenSelect.addEventListener('change', function() {
+                const kitchenId = this.value;
+                kodeInput.value = generatedCodes[kitchenId] || "";
+            });
+
+            let oldKitchenId = null;
+            let oldKode = null;
+
+            document.querySelectorAll('.btnEditMenu').forEach(btn => {
+                btn.addEventListener('click', function() {
+
+                    const id = this.dataset.id;
+                    const isUsed = this.dataset.isUsed === 'true';
+                    if (isUsed) {
+                        // Opsional: Gunakan SweetAlert jika Anda menginstalnya
+                        alert(
+                            'Perhatian: Menu ini sudah memiliki resep. Anda tidak dapat mengubah Dapur atau Nama Menu untuk menjaga konsistensi data.');
+
+                        // Lock field agar tidak bisa diedit
+                        document.getElementById('editMenu').readOnly = true;
+                        document.getElementById('editDapur').disabled = true;
+                        document.querySelector('#modalEditMenu button[type="submit"]').style
+                            .display = 'none';
+                    } else {
+                        // Unlock field jika menu masih "bersih"
+                        document.getElementById('editMenu').readOnly = false;
+                        document.getElementById('editDapur').disabled = false;
+                        document.querySelector('#modalEditMenu button[type="submit"]').style
+                            .display = 'block';
+                    }
+                    // Simpan dapur lama & kode lama
+                    oldKitchenId = this.dataset.oldDapurId;
+                    oldKode = this.dataset.oldKode;
+
+                    // Isi field pertama kali
+                    document.getElementById('editKodeMenu').value = oldKode;
+                    document.getElementById('editMenu').value = this.dataset.nama;
+                    document.getElementById('editDapur').value = oldKitchenId;
+
+                    // Update action
+                    document.querySelector('#modalEditMenu form').action =
+                        "{{ url('/dashboard/master/nama-menu') }}/" + id;
+
+                });
+            });
+
+            // Ubah kode ketika dapur berubah
+            document.getElementById('editDapur').addEventListener('change', function() {
+                const selectedKitchenId = this.value;
+
+                // Jika user memilih kembali dapur awal → kembalikan kode lama
+                if (selectedKitchenId == oldKitchenId) {
+                    document.getElementById('editKodeMenu').value = oldKode;
+                    return;
+                }
+
+                // Jika dapur berbeda → generate kode baru
+                const kodeBaru = generatedCodes[selectedKitchenId] || "";
+                document.getElementById('editKodeMenu').value = kodeBaru;
+            });
+        });
+    </script>
+@endpush

@@ -1,0 +1,155 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Models\Kitchen;
+use App\Models\SubmissionDetails;
+use App\Models\Supplier;
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\BahanBaku;
+
+class ReportSalesPartnerController extends Controller
+{
+    protected function userKitchenCodes()
+    {
+        $allowedCodes = auth()->user()->kitchens()->pluck('kode');
+        return Kitchen::whereIn('kode', $allowedCodes)->pluck('id')->toArray();
+
+    }
+    public function index(Request $request)
+    {
+        $kitchensCodes = $this->userKitchenCodes();
+
+        $kitchens = Kitchen::whereIn('id', $kitchensCodes)->orderBy('nama')->get();
+        $suppliers = Supplier::all();
+        $bahanBakus = BahanBaku::selectRaw('MIN(id) as id, nama')
+            ->groupBy('nama')
+            ->get();
+
+        $query = SubmissionDetails::with([
+            'submission.kitchen',
+            'submission.parentSubmission',
+            'bahan_baku',
+            'submission.supplier',
+        ]);
+
+        $query->whereHas('submission', function ($q) use ($kitchensCodes) {
+            $q->whereNotNull('parent_id')
+                ->whereIn('kitchen_id', $kitchensCodes);
+        });
+
+        if ($request->filled('from_date') || $request->filled('to_date')) {
+            $query->whereHas('submission.parentSubmission', function ($ps) use ($request) {
+
+                if ($request->filled('from_date')) {
+                    $ps->whereDate('tanggal', '>=', $request->from_date);
+                }
+
+                if ($request->filled('to_date')) {
+                    $ps->whereDate('tanggal', '<=', $request->to_date);
+                }
+
+            });
+        }
+
+        if ($request->filled('kitchen_id')) {
+            $query->whereHas(
+                'submission',
+                fn($q) =>
+                $q->where('kitchen_id', $request->kitchen_id)
+            );
+        }
+        if ($request->filled('supplier_id')) {
+            $query->whereHas(
+                'submission',
+                fn($q) =>
+                $q->where('supplier_id', $request->supplier_id)
+            );
+        }
+        if ($request->filled('bahan_baku_id')) {
+            $selectedBahan = \App\Models\BahanBaku::find($request->bahan_baku_id);
+
+            if ($selectedBahan) {
+                $namaBahan = $selectedBahan->nama;
+
+                $query->where(function ($q) use ($namaBahan) {
+                    // Filter 1: Lewat relasi langsung bahanBaku
+                    $q->whereHas('bahan_baku', function ($qb) use ($namaBahan) {
+                        $qb->where('nama', $namaBahan);
+                    })
+                        // Filter 2: Lewat relasi resep (Gunakan bahan_baku sesuai modelmu)
+                        // Nested relationship: recipeBahanBaku -> bahan_baku
+                        ->orWhereHas('bahan_baku', function ($qr) use ($namaBahan) {
+                            $qr->where('nama', $namaBahan);
+                        });
+                });
+            }
+        }
+
+        $query->orderByDesc(\App\Models\Submission::select('tanggal')
+            ->whereIn('id', function ($subQuery) {
+                $subQuery->select('parent_id')
+                    ->from('submissions')
+                    ->whereColumn('id', 'submission_details.submission_id');
+            })
+            ->limit(1));
+
+        $reports = $query->latest('id')->paginate(10)->withQueryString();
+
+        $totalPageSubtotal = $reports->sum('subtotal');
+
+        return view('report.sales-partner', compact('kitchens', 'reports', 'suppliers', 'totalPageSubtotal', 'bahanBakus'));
+    }
+
+    public function invoice(Request $request)
+    {
+        $kitchenCodes = $this->userKitchenCodes();
+        $query = SubmissionDetails::with(['submission.kitchen', 'bahan_baku.unit', 'submission.supplier', 'bahan_baku.unit']);
+
+        $query->whereHas('submission', function ($q) {
+            $q->whereNotNull('parent_id');
+        });
+
+        if ($request->from_date && $request->to_date) {
+            $query->whereHas('submission', function ($q) use ($kitchenCodes, $request) {
+                $q->whereBetween('tanggal', [$request->from_date, $request->to_date])
+                    ->whereIn('kitchen_id', $kitchenCodes);
+
+            });
+        }
+
+        if ($request->kitchen_id) {
+            $query->whereHas('submission', function ($q) use ($request) {
+                $q->where('kitchen_id', $request->kitchen_id);
+            });
+        }
+
+        if ($request->supplier_id) {
+            $query->whereHas('submission', function ($q) use ($request) {
+                $q->where('supplier_id', $request->supplier_id);
+            });
+        }
+
+
+        $reports = $query->get();
+
+        $reports = $reports->sortByDesc(function ($item) {
+            return $item->submission->tanggal;
+        });
+
+        $today = date('d-m-Y');
+
+        $submission = $reports->first()->submission ?? null;
+
+        $totalPageSubtotal = $reports->sum('subtotal');
+
+        $pdf = PDF::loadView('report.invoiceReport-sales-partner', compact('submission', 'reports', 'totalPageSubtotal'));
+
+        $pdf->setPaper('a4', 'landscape');
+
+        return $pdf->download('laporan penjualan mitra_' . $today . '.pdf');
+    }
+
+}

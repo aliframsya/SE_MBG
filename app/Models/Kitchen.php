@@ -1,0 +1,71 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\User;
+
+
+class Kitchen extends Model
+{
+    use SoftDeletes;
+
+    protected $table = 'kitchens';
+
+    protected $fillable = [
+        'kode',
+        'nama',
+        'alamat',
+        'kota',
+        'kepala_dapur',
+        'nomor_kepala_dapur',
+        'region_id'
+    ];
+
+    public function menus()
+    {
+        return $this->hasMany(Menu::class);
+    }
+    public function recipe_bahan_baku()
+    {
+        return $this->hasMany(RecipeBahanBaku::class);
+    }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'kitchen_user', 'kitchen_Kode', 'user_id', 'kode', 'id');
+    }
+
+    public function region()
+    {
+        return $this->belongsTo(region::class);
+    }
+
+    public function submissions()
+    {
+        return $this->hasMany(Submission::class);
+    }
+
+    public function operational()
+    {
+        return $this->hasMany(operationals::class);
+    }
+
+    public function operationaldetails()
+    {
+        return $this->hasMany(submissionOperational::class);
+    }
+
+    public function suppliers()
+    {
+        return $this->belongsToMany(
+            Supplier::class,      // Model Lawan
+            'kitchen_suppliers',  // Tabel Pivot
+            'kitchen_kode',       // Foreign Key milik Kitchen di Pivot
+            'suppliers_id',       // Foreign Key milik Supplier di Pivot
+            'kode',               // Local Key di tabel Kitchen (menggunakan 'kode')
+            'id'                  // Local Key di tabel Supplier (menggunakan 'id')
+        );
+    }
+}
