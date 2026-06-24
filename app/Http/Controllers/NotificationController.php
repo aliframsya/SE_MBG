@@ -60,6 +60,7 @@ $summary = [
     'low_stock' => $totalLowStock,
 ];
 
+
     return view(
     'notifications.index',
     compact(
