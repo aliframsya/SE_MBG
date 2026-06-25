@@ -152,6 +152,19 @@ Route::middleware(['auth', 'disetujui'])->group(function () {
             Route::delete('/{id}', 'destroy')->middleware('permission:master.bank.delete')->name('destroy');
         });
 
+        Route::prefix('dashboard/master/medical checkup')
+        ->name('master.medicalcheckup.')
+        ->controller(BankAccountController::class)
+        ->group(function () {
+
+            Route::get('/check-account', 'checkAccountNumber')->name('check');
+            Route::get('/', 'index')->middleware('permission:master.medicalcheckup.view')->name('view');
+            Route::post('/', 'store')->middleware('permission:master.medicalcheckup.create')->name('store');
+            Route::get('/{id}', 'show')->middleware('permission:master.medicalcheckup.view')->name('show');
+            Route::match(['put', 'patch'], '/{id}', 'update')->middleware('permission:master.medicalcheckup.update')->name('update');
+            Route::delete('/{id}', 'destroy')->middleware('permission:master.medicalcheckup.delete')->name('destroy');
+        });
+
 
     /*
     |------------------------------------------------------------------

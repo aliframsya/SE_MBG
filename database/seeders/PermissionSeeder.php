@@ -57,6 +57,11 @@ class PermissionSeeder extends Seeder
             'master.bank.update',
             'master.bank.delete',
 
+            'master.medicalcheckup.view',
+            'master.medicalcheckup.create',
+            'master.medicalcheckup.update',
+            'master.medicalcheckup.delete',
+
             
 
             // SETUP
