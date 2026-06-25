@@ -332,17 +332,6 @@ return [
         'topnav_right' => true,
     ],
 
-        // Navbar items:
-        [
-            'type' => 'navbar-search',
-            'text' => 'search',
-            'topnav_right' => true,
-        ],
-        [
-            'type' => 'fullscreen-widget',
-            'topnav_right' => true,
-        ],
-
         // Sidebar items:
         [
             'type' => 'sidebar-menu-search',
