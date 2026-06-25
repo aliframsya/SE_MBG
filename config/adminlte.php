@@ -313,6 +313,24 @@ return [
     */
 
     'menu' => [
+    // Navbar items:
+    [
+        'type' => 'navbar-search',
+        'text' => 'search',
+        'topnav_right' => true,
+    ],
+
+    [
+        'text' => 'Notifikasi',
+        'icon' => 'fas fa-bell',
+        'url'  => 'notifications',
+        'topnav_right' => true,
+    ],
+
+    [
+        'type' => 'fullscreen-widget',
+        'topnav_right' => true,
+    ],
 
         // Navbar items:
         [

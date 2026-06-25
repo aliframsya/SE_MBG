@@ -38,6 +38,49 @@
     </div>
 @endif
 
+@php
+$pendingCount = \App\Models\Submission::where('status','diajukan')->count();
+
+$rejectedCount = \App\Models\Submission::where('status','ditolak')->count();
+
+$lowStockCount = \App\Models\BahanBaku::whereColumn(
+    'stok',
+    '<=',
+    'stok_minimal'
+)->count();
+@endphp
+
+<div class="row mb-3">
+
+    @if($pendingCount > 0)
+    <div class="col-md-4">
+        <div class="alert alert-warning">
+            <strong>{{ $pendingCount }}</strong>
+            pengajuan menunggu approval
+        </div>
+    </div>
+    @endif
+
+    @if($rejectedCount > 0)
+    <div class="col-md-4">
+        <div class="alert alert-danger">
+            <strong>{{ $rejectedCount }}</strong>
+            pengajuan ditolak
+        </div>
+    </div>
+    @endif
+
+    @if($lowStockCount > 0)
+    <div class="col-md-4">
+        <div class="alert alert-info">
+            <strong>{{ $lowStockCount }}</strong>
+            bahan baku stok hampir habis
+        </div>
+    </div>
+    @endif
+
+</div>
+
 {{-- ================= SUMMARY CARDS ================= --}}
 <div class="row">
     <div class="col-lg-3 col-6">

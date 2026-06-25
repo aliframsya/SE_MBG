@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Middleware\ApprovedUser;
+use App\Http\Middleware\KaryawanAuthenticated;
+use App\Http\Middleware\RedirectIfKaryawanAuthenticated;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -21,6 +23,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => PermissionMiddleware::class,
             'role_or_permission' => RoleOrPermissionMiddleware::class,
             'disetujui' => ApprovedUser::class,
+            'karyawan.auth' => KaryawanAuthenticated::class,
+            'karyawan.guest' => RedirectIfKaryawanAuthenticated::class,
 
         ]);
 

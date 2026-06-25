@@ -36,12 +36,15 @@ use App\Http\Controllers\ReportPurchaseOperationalNewController;
 
 
 require __DIR__ . '/auth.php';
+require __DIR__ . '/karyawan.php';
 
 //Route::get('/', fn() => redirect()->route('dashboard.master.bahan-baku.index'));
 Route::get('/', [HomePageController::class, 'index'])->name('portal.index');
 Route::get('/menunggu-persetujuan', function () {
     return view('auth.waiting-approval');
 })->middleware(['auth', 'disetujui'])->name('waiting.approval');
+Route::get('/notifications', [App\Http\Controllers\NotificationController::class, 'index'])
+    ->name('notifications.index');
 
 
 Route::middleware(['auth', 'disetujui'])->group(function () {
