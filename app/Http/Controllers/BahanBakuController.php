@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use App\Http\Controllers\Concerns\HasPerPage;
- // Tambahkan ini untuk query manual ke tabel pivot
 
 class BahanBakuController extends Controller
 {
@@ -25,28 +24,21 @@ class BahanBakuController extends Controller
         // -----------------------------------------------------------
         // 1. AMBIL KITCHEN MILIK USER (LOGIC BARU)
         // -----------------------------------------------------------
-        // Kita ambil daftar kode kitchen dari tabel pivot 'kitchen_user'
         $myKitchenCodes = DB::table('kitchen_user')
             ->where('user_id', $user->id)
             ->pluck('kitchen_kode')
             ->toArray();
 
-        // Isi variabel $kitchens berdasarkan kode yang didapat di atas
-        // Ini akan memfilter dropdown agar hanya muncul dapur milik user
         $kitchens = Kitchen::whereIn('kode', $myKitchenCodes)->get();
 
-        // Ambil ID untuk filtering data bahan baku
         $kitchenIds = $kitchens->pluck('id');
 
         if ($request->filled('kitchen_kode')) {
-        // Cari apakah kode dapur yang direquest ada di dalam daftar dapur milik user
-        $selectedKitchen = $kitchens->where('kode', $request->kitchen_kode)->first();
+            $selectedKitchen = $kitchens->where('kode', $request->kitchen_kode)->first();
 
             if ($selectedKitchen) {
-                // Jika valid, timpa array $kitchenIds menjadi satu ID saja
                 $kitchenIds = collect([$selectedKitchen->id]);
             } else {
-                // Jika user iseng memasukkan kode dapur orang lain di URL, kosongkan ID
                 $kitchenIds = collect([]); 
             }
         }
@@ -56,11 +48,9 @@ class BahanBakuController extends Controller
         // -----------------------------------------------------------
         $query = BahanBaku::with(['kitchen']);
 
-        // Filter: Hanya tampilkan bahan baku yang kitchen_id nya ada di list dapur user
         if ($kitchenIds->isNotEmpty()) {
             $query->whereIn('kitchen_id', $kitchenIds);
         } else {
-            // Jika user tidak punya dapur, jangan tampilkan data apa pun
             $query->where('id', -1);
         }
 
@@ -75,22 +65,17 @@ class BahanBakuController extends Controller
        $items = $query->paginate($this->resolvePerPage($request))
                ->withQueryString();
 
-
-        // Pre-generate kode untuk semua dapur milik user
         $generatedCodes = [];
         foreach ($kitchens as $k) {
             $generatedCodes[$k->id] = $this->generateKode($k->kode);
         }
 
-        // Variabel tetap $kitchens sesuai permintaan
         return view('dashboard.master.bahan-baku.index', compact('items', 'kitchens', 'generatedCodes', 'canManage'));
     }
 
     // Generate kode bahan baku: 2 digit + kode dapur
     private function generateKode($kodeDapur)
     {
-        // Gunakan withTrashed() agar data yang sudah di-soft delete tetap terbaca.
-        // Jika tidak, kode bisa bentrok (Duplicate Entry) dengan data sampah.
         $lastItem = BahanBaku::withTrashed()
             ->where('kode', 'LIKE', "BN{$kodeDapur}%")
             ->orderBy('kode', 'desc')
@@ -114,7 +99,6 @@ class BahanBakuController extends Controller
     // Simpan bahan baku baru
     public function store(Request $request)
     {
-
         if (!$this->canManage()) {
             abort(403, 'Anda tidak memiliki akses untuk menambah data.');
         }
@@ -132,14 +116,14 @@ class BahanBakuController extends Controller
             ],
             'harga' => 'nullable|numeric|min:0',
             'kitchen_id' => 'required|exists:kitchens,id',
+            'total_stok' => 'nullable|numeric|min:0', // Menangkap input total_stok
         ]);
 
         $kitchen = Kitchen::findOrFail($request->kitchen_id);
 
         // -----------------------------------------------------------
-        // VALIDASI AKSES (PERBAIKAN)
+        // VALIDASI AKSES
         // -----------------------------------------------------------
-        // Cek manual ke tabel pivot kitchen_user menggunakan KODE
         $hasAccess = DB::table('kitchen_user')
             ->where('user_id', $user->id)
             ->where('kitchen_kode', $kitchen->kode)
@@ -154,6 +138,7 @@ class BahanBakuController extends Controller
             'nama' => $request->nama,
             'harga' => $request->input('harga', 0),
             'kitchen_id' => $request->kitchen_id,
+            'qty' => $request->input('total_stok', 0), // Menyimpan input total_stok ke kolom qty
         ]);
 
         return redirect()->route('dashboard.master.bahan-baku.index')
@@ -162,7 +147,6 @@ class BahanBakuController extends Controller
 
     public function update(Request $request, $id)
     {
-
         if (!$this->canManage()) {
             abort(403, 'Anda tidak memiliki akses untuk menambah data.');
         }
@@ -172,7 +156,7 @@ class BahanBakuController extends Controller
         $item = BahanBaku::with('kitchen')->findOrFail($id);
 
         // -----------------------------------------------------------
-        // VALIDASI AKSES DATA LAMA (PERBAIKAN)
+        // VALIDASI AKSES DATA LAMA
         // -----------------------------------------------------------
         $hasAccessOrigin = DB::table('kitchen_user')
             ->where('user_id', $user->id)
@@ -194,12 +178,14 @@ class BahanBakuController extends Controller
             ],
             'harga' => 'nullable|numeric|min:0',
             'kitchen_id' => 'required|exists:kitchens,id',
+            'total_stok' => 'nullable|numeric|min:0', // Menangkap input total_stok saat update
         ]);
 
         $data = [
             'nama' => $request->nama,
             'harga' => $request->input('harga', 0),
             'kitchen_id' => $request->kitchen_id,
+            'qty' => $request->input('total_stok', $item->qty), // Update qty
         ];
 
         // Jika pindah dapur, cek akses dapur tujuan & generate kode baru
@@ -250,6 +236,7 @@ class BahanBakuController extends Controller
         return redirect()->route('dashboard.master.bahan-baku.index')
             ->with('success', 'Bahan baku berhasil dihapus.');
     }
+    
     // Fungsi bantuan untuk cek role
     private function canManage()
     {
