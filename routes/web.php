@@ -36,6 +36,7 @@ use App\Http\Controllers\ReportPurchaseOperationalNewController;
 
 
 require __DIR__ . '/auth.php';
+require __DIR__ . '/karyawan.php';
 
 //Route::get('/', fn() => redirect()->route('dashboard.master.bahan-baku.index'));
 Route::get('/', [HomePageController::class, 'index'])->name('portal.index');
