@@ -442,6 +442,11 @@ return [
             'icon' => 'fas fa-fw fa-exchange-alt',
             'submenu' => [
                 [
+                    'text' => 'Simulasi Use Case (Admin)',
+                    'icon' => 'fas fa-shield-alt',
+                    'route' => 'admin-features.index',
+                ],
+                [
                     'text' => 'Pengajuan Menu',
                     'icon' => 'fas fa-fw fa-paper-plane',
                     'route' => 'transaction.submission.index',

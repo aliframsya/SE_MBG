@@ -605,6 +605,28 @@ Route::middleware(['auth', 'disetujui'])->group(function () {
             Route::delete('/{id}', 'destroy')->middleware('role:superadmin')->name('destroy');
         });
 
+    /*
+    |------------------------------------------------------------------
+    | REVISION: CLASS & USE CASE DIAGRAM FEATURES (ADMIN)
+    |------------------------------------------------------------------
+    */
+    Route::prefix('dashboard/admin-features')
+        ->name('admin-features.')
+        ->controller(App\Http\Controllers\AdminFeatureController::class)
+        ->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::post('/supplier/toggle/{id}', 'toggleSupplierStatus')->name('supplier.toggle');
+            Route::post('/po', 'storePO')->name('po.store');
+            Route::post('/po/confirm/{id}', 'confirmPO')->name('po.confirm');
+            Route::post('/po/cancel/{id}', 'cancelPO')->name('po.cancel');
+            Route::post('/po/pembayaran/{poId}', 'prosesPembayaran')->name('po.pembayaran');
+            Route::post('/pembayaran/konfirmasi/{id}', 'konfirmasiBayar')->name('pembayaran.konfirmasi');
+            Route::post('/po/terima/{poId}', 'terimaBahan')->name('po.terima');
+            Route::post('/fifo/keluar', 'keluarkanFIFO')->name('fifo.keluar');
+            Route::post('/fifo/rekonsiliasi', 'rekonsiliasiFIFO')->name('fifo.rekonsiliasi');
+            Route::post('/karyawan/store', 'storeKaryawan')->name('karyawan.store');
+        });
+
     // Route::get('/dashboard', function () {
     //     return redirect()->route('dashboard.master.bahan-baku.index');
     // })->middleware('auth')->name('dashboard');

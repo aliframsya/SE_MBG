@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Karyawan\DashboardController as KaryawanDashboardController;
 use App\Http\Controllers\BankAccountController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
@@ -588,6 +589,16 @@ Route::middleware(['auth', 'disetujui'])->group(function () {
             Route::get('/{id}/download', 'download')->name('download');
             Route::delete('/{id}', 'destroy')->middleware('role:superadmin')->name('destroy');
         });
+
+        Route::middleware(['auth', 'disetujui', 'role:karyawan'])
+    ->prefix('dashboard/karyawan')
+    ->name('karyawan.')
+    ->group(function () {
+
+        Route::get('/', [KaryawanDashboardController::class, 'index'])
+            ->name('dashboard');
+
+    });
 
     // Route::get('/dashboard', function () {
     //     return redirect()->route('dashboard.master.bahan-baku.index');

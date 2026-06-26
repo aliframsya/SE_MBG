@@ -20,7 +20,7 @@ class KaryawanAuthController extends Controller
      */
     public function create(): View
     {
-        return view('karyawan.login');
+        return view('auth.loginkaryawan');
     }
 
     /**

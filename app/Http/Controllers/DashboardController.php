@@ -15,6 +15,9 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         $user = auth()->user();
+        if ($user->hasRole('karyawan')) {
+            return redirect()->route('karyawan.dashboard');
+        }
         $month = $request->query('month');
         $selectedKitchen = $request->get('kitchen', 'all');
         // ==========================
