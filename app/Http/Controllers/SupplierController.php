@@ -74,6 +74,7 @@ class SupplierController extends Controller
         // Validasi input
         $request->validate([
             'nama' => 'required|string|max:255',
+            'kategori' => 'nullable|string|max:255',
             'alamat' => 'required|string|max:255',
             'kontak' => 'required|string|max:255',
             'nomor' => 'required|string|max:20',
@@ -89,6 +90,7 @@ class SupplierController extends Controller
         $supplier = Supplier::create([
             'kode' => self::generateKode(),
             'nama' => $request->nama,
+            'kategori' => $request->kategori,
             'alamat' => $request->alamat,
             'kontak' => $request->kontak,
             'nomor' => $request->nomor,
@@ -175,6 +177,7 @@ class SupplierController extends Controller
         $request->validate([
             'kode' => 'required|unique:suppliers,kode,' . $supplier->id,
             'nama' => 'required|string|max:255',
+            'kategori' => 'nullable|string|max:255',
             'alamat' => 'required|string|max:255',
             'kontak' => 'required|string|max:255',
             'nomor' => 'required|string|max:20',
@@ -186,6 +189,7 @@ class SupplierController extends Controller
 
         $supplier->update([
             'nama' => $request->nama,
+            'kategori' => $request->kategori,
             'alamat' => $request->alamat,
             'kontak' => $request->kontak,
             'nomor' => $request->nomor,

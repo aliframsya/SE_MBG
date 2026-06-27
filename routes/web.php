@@ -165,6 +165,16 @@ Route::middleware(['auth', 'disetujui'])->group(function () {
             Route::delete('/{id}', 'destroy')->middleware('permission:master.medicalcheckup.delete')->name('destroy');
         });
 
+    Route::prefix('distribusi')
+        ->name('distribusi.')
+        ->controller(\App\Http\Controllers\Admin\DistribusiController::class)
+        ->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::post('/', 'store')->name('store');
+            Route::put('/{id}', 'update')->name('update');
+            Route::delete('/{id}', 'destroy')->name('destroy');
+        });
+
 
     /*
     |------------------------------------------------------------------
@@ -607,24 +617,70 @@ Route::middleware(['auth', 'disetujui'])->group(function () {
 
     /*
     |------------------------------------------------------------------
-    | REVISION: CLASS & USE CASE DIAGRAM FEATURES (ADMIN)
+    | ADMIN TRANSAKSI (CRUD)
     |------------------------------------------------------------------
     */
-    Route::prefix('dashboard/admin-features')
-        ->name('admin-features.')
-        ->controller(App\Http\Controllers\AdminFeatureController::class)
+    
+    // Purchase Order (PO)
+    Route::prefix('dashboard/admin/po')
+        ->name('admin.po.')
+        ->controller(\App\Http\Controllers\Admin\PurchaseOrderController::class)
         ->group(function () {
             Route::get('/', 'index')->name('index');
-            Route::post('/supplier/toggle/{id}', 'toggleSupplierStatus')->name('supplier.toggle');
-            Route::post('/po', 'storePO')->name('po.store');
-            Route::post('/po/confirm/{id}', 'confirmPO')->name('po.confirm');
-            Route::post('/po/cancel/{id}', 'cancelPO')->name('po.cancel');
-            Route::post('/po/pembayaran/{poId}', 'prosesPembayaran')->name('po.pembayaran');
-            Route::post('/pembayaran/konfirmasi/{id}', 'konfirmasiBayar')->name('pembayaran.konfirmasi');
-            Route::post('/po/terima/{poId}', 'terimaBahan')->name('po.terima');
-            Route::post('/fifo/keluar', 'keluarkanFIFO')->name('fifo.keluar');
-            Route::post('/fifo/rekonsiliasi', 'rekonsiliasiFIFO')->name('fifo.rekonsiliasi');
-            Route::post('/karyawan/store', 'storeKaryawan')->name('karyawan.store');
+            Route::get('/create', 'create')->name('create');
+            Route::post('/', 'store')->name('store');
+            Route::get('/{po}', 'show')->name('show');
+            Route::get('/{po}/edit', 'edit')->name('edit');
+            Route::put('/{po}', 'update')->name('update');
+            Route::delete('/{po}', 'destroy')->name('destroy');
+            Route::post('/{po}/confirm', 'confirm')->name('confirm');
+            Route::post('/{po}/cancel', 'cancel')->name('cancel');
+        });
+
+    // Pembayaran
+    Route::prefix('dashboard/admin/pembayaran')
+        ->name('admin.pembayaran.')
+        ->controller(\App\Http\Controllers\Admin\PembayaranController::class)
+        ->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('/create', 'create')->name('create');
+            Route::post('/', 'store')->name('store');
+            Route::get('/{pembayaran}', 'show')->name('show');
+            Route::get('/{pembayaran}/edit', 'edit')->name('edit');
+            Route::put('/{pembayaran}', 'update')->name('update');
+            Route::delete('/{pembayaran}', 'destroy')->name('destroy');
+            Route::post('/{pembayaran}/konfirmasi', 'konfirmasi')->name('konfirmasi');
+        });
+
+    // Penerimaan Barang (QC)
+    Route::prefix('dashboard/admin/penerimaan')
+        ->name('admin.penerimaan.')
+        ->controller(\App\Http\Controllers\Admin\PenerimaanBarangController::class)
+        ->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('/create', 'create')->name('create');
+            Route::post('/', 'store')->name('store');
+            Route::get('/{penerimaan}', 'show')->name('show');
+            Route::get('/{penerimaan}/edit', 'edit')->name('edit');
+            Route::put('/{penerimaan}', 'update')->name('update');
+            Route::delete('/{penerimaan}', 'destroy')->name('destroy');
+        });
+
+    // Stok Gudang (FIFO)
+    Route::prefix('dashboard/admin/stok')
+        ->name('admin.stok.')
+        ->controller(\App\Http\Controllers\Admin\StokGudangController::class)
+        ->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::post('/keluarkan', 'keluarkanFIFO')->name('keluarkan');
+            Route::post('/rekonsiliasi', 'rekonsiliasiFIFO')->name('rekonsiliasi');
+            // Basic CRUD if needed manually
+            Route::get('/create', 'create')->name('create');
+            Route::post('/', 'store')->name('store');
+            Route::get('/{stok}', 'show')->name('show');
+            Route::get('/{stok}/edit', 'edit')->name('edit');
+            Route::put('/{stok}', 'update')->name('update');
+            Route::delete('/{stok}', 'destroy')->name('destroy');
         });
 
     // Route::get('/dashboard', function () {

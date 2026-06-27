@@ -180,19 +180,28 @@ class KaryawanDashboardController extends Controller
     {
         $request->validate([
             'tanggal' => 'required|date',
-            'total_pm' => 'required|integer|min:1',
+            'pm_porsi_kecil' => 'required|integer|min:0',
+            'pm_porsi_besar' => 'required|integer|min:0',
             'buffer_persen' => 'required|numeric|min:0|max:100',
-            'budget_harian' => 'required|numeric|min:0',
         ]);
+
+        if ($request->pm_porsi_kecil == 0 && $request->pm_porsi_besar == 0) {
+            return back()->withErrors(['pm_porsi_kecil' => 'Total Penerima Manfaat tidak boleh 0.']);
+        }
+
+        // Calculate budget automatically
+        // Porsi Kecil = Rp 8.000, Porsi Besar = Rp 10.000
+        $budgetHarian = ($request->pm_porsi_kecil * 8000) + ($request->pm_porsi_besar * 10000);
 
         $karyawan = $this->getKaryawan();
 
         // Call UML method on Karyawan
         $kebutuhan = $karyawan->hitungKebutuhanHarian(
             $request->tanggal,
-            $request->total_pm,
+            $request->pm_porsi_kecil,
+            $request->pm_porsi_besar,
             $request->buffer_persen,
-            $request->budget_harian
+            $budgetHarian
         );
 
         // Validate and adjust if budget exceeded
@@ -212,13 +221,26 @@ class KaryawanDashboardController extends Controller
     {
         $request->validate([
             'tanggal' => 'required|date',
-            'total_pm' => 'required|integer|min:1',
+            'pm_porsi_kecil' => 'required|integer|min:0',
+            'pm_porsi_besar' => 'required|integer|min:0',
             'buffer_persen' => 'required|numeric|min:0|max:100',
-            'budget_harian' => 'required|numeric|min:0',
         ]);
 
+        if ($request->pm_porsi_kecil == 0 && $request->pm_porsi_besar == 0) {
+            return back()->withErrors(['pm_porsi_kecil' => 'Total Penerima Manfaat tidak boleh 0.']);
+        }
+
+        $budgetHarian = ($request->pm_porsi_kecil * 8000) + ($request->pm_porsi_besar * 10000);
+
         $kebutuhan = KebutuhanHarian::findOrFail($id);
-        $kebutuhan->update($request->all());
+        $kebutuhan->update([
+            'tanggal' => $request->tanggal,
+            'total_pm' => $request->pm_porsi_kecil + $request->pm_porsi_besar,
+            'pm_porsi_kecil' => $request->pm_porsi_kecil,
+            'pm_porsi_besar' => $request->pm_porsi_besar,
+            'buffer_persen' => $request->buffer_persen,
+            'budget_harian' => $budgetHarian,
+        ]);
 
         // Validate and adjust if budget exceeded
         $isValid = $kebutuhan->validasiBudget();

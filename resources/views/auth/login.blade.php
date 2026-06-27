@@ -27,11 +27,14 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 50%, #FFFFFF 100%);
+            background-image: url('{{ asset("vendor/adminlte/dist/img/login-bg.jpg") }}');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
             overflow: hidden;
         }
 
-        /* Animated gradient overlay for fun effect */
+        /* Dark overlay for better text readability on image background */
         .login-container::before {
             content: '';
             position: absolute;
@@ -39,22 +42,8 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: 
-                radial-gradient(circle at 20% 20%, rgba(0, 201, 255, 0.08) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(30, 144, 255, 0.06) 0%, transparent 50%),
-                radial-gradient(circle at 50% 50%, rgba(100, 149, 237, 0.04) 0%, transparent 50%);
-            animation: gradientShift 15s ease-in-out infinite;
-        }
-
-        @keyframes gradientShift {
-            0%, 100% {
-                opacity: 1;
-                transform: scale(1) rotate(0deg);
-            }
-            50% {
-                opacity: 0.8;
-                transform: scale(1.1) rotate(5deg);
-            }
+            background: rgba(0, 0, 0, 0.5); /* semi-transparent black overlay */
+            z-index: 0;
         }
 
         /* Animated Food Icons */
@@ -515,140 +504,7 @@
     </style>
 
     <div class="login-container">
-        <!-- Animated Food Icons -->
-        <div class="bg-shapes">
-            <!-- Salad Bowl -->
-            <div class="food-icon food-1">
-                <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="32" cy="36" r="24" fill="#90EE90"/>
-                    <path d="M16 36C16 36 20 28 32 28C44 28 48 36 48 36" stroke="#228B22" stroke-width="2"/>
-                    <ellipse cx="26" cy="32" rx="4" ry="3" fill="#FF6347"/>
-                    <ellipse cx="38" cy="34" rx="3" ry="2.5" fill="#FFD700"/>
-                    <path d="M12 36H52C52 45 43 52 32 52C21 52 12 45 12 36Z" fill="#98FB98"/>
-                </svg>
-            </div>
-            
-            <!-- Carrot -->
-            <div class="food-icon food-2">
-                <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M32 12L28 20C26 28 24 36 24 44C24 52 28 56 32 56C36 56 40 52 40 44C40 36 38 28 36 20L32 12Z" fill="#FF8C00"/>
-                    <path d="M30 10C30 10 26 6 24 8C22 10 26 14 26 14" stroke="#228B22" stroke-width="2" fill="#32CD32"/>
-                    <path d="M34 10C34 10 38 6 40 8C42 10 38 14 38 14" stroke="#228B22" stroke-width="2" fill="#32CD32"/>
-                    <line x1="28" y1="24" x2="30" y2="26" stroke="#FFA500" stroke-width="1.5"/>
-                    <line x1="34" y1="30" x2="36" y2="32" stroke="#FFA500" stroke-width="1.5"/>
-                </svg>
-            </div>
-            
-            <!-- Tomato -->
-            <div class="food-icon food-3">
-                <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="32" cy="36" r="20" fill="#FF6347"/>
-                    <path d="M28 16C28 16 30 12 32 12C34 12 36 16 36 16" stroke="#228B22" stroke-width="2.5" stroke-linecap="round"/>
-                    <path d="M26 16L32 20L38 16" fill="#32CD32"/>
-                    <ellipse cx="28" cy="32" rx="3" ry="4" fill="#FF4500" opacity="0.3"/>
-                </svg>
-            </div>
-            
-            <!-- Broccoli -->
-            <div class="food-icon food-4">
-                <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="26" cy="24" r="8" fill="#228B22"/>
-                    <circle cx="38" cy="24" r="8" fill="#228B22"/>
-                    <circle cx="32" cy="18" r="7" fill="#32CD32"/>
-                    <circle cx="32" cy="30" r="8" fill="#228B22"/>
-                    <path d="M28 36L30 52C30 52 32 54 34 52L36 36" fill="#90EE90" stroke="#228B22" stroke-width="1.5"/>
-                </svg>
-            </div>
-            
-            <!-- Avocado -->
-            <div class="food-icon food-5">
-                <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M32 12C24 12 16 20 16 32C16 44 24 56 32 56C40 56 48 44 48 32C48 20 40 12 32 12Z" fill="#6B8E23"/>
-                    <ellipse cx="32" cy="34" rx="10" ry="12" fill="#9ACD32"/>
-                    <circle cx="32" cy="34" r="5" fill="#8B4513"/>
-                </svg>
-            </div>
-            
-            <!-- Cooking Pot -->
-            <div class="food-icon food-6">
-                <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="16" y="28" width="32" height="24" rx="4" fill="#C0C0C0"/>
-                    <rect x="14" y="26" width="36" height="4" fill="#A9A9A9"/>
-                    <circle cx="20" cy="24" r="2" fill="#696969"/>
-                    <circle cx="44" cy="24" r="2" fill="#696969"/>
-                    <path d="M24 32C24 32 28 36 32 36C36 36 40 32 40 32" stroke="#FFD700" stroke-width="2"/>
-                </svg>
-            </div>
-            
-            <!-- Apple -->
-            <div class="food-icon food-7">
-                <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="32" cy="36" r="18" fill="#DC143C"/>
-                    <path d="M32 18C32 18 30 14 32 12C34 10 36 14 36 18" stroke="#8B4513" stroke-width="2" stroke-linecap="round"/>
-                    <path d="M34 16C34 16 38 14 40 16C40 16 38 18 36 18" fill="#228B22"/>
-                    <ellipse cx="26" cy="32" rx="4" ry="5" fill="#FF6B6B" opacity="0.4"/>
-                </svg>
-            </div>
-            
-            <!-- Egg -->
-            <div class="food-icon food-8">
-                <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <ellipse cx="32" cy="36" rx="16" ry="22" fill="#FFFACD"/>
-                    <ellipse cx="32" cy="36" rx="14" ry="20" fill="#FFFFE0"/>
-                    <ellipse cx="28" cy="32" rx="3" ry="4" fill="#FFF" opacity="0.6"/>
-                </svg>
-            </div>
 
-            <!-- Strawberry -->
-            <div class="food-icon food-9">
-                <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M32 16C28 16 20 20 18 28C16 36 20 52 32 56C44 52 48 36 46 28C44 20 36 16 32 16Z" fill="#DC143C"/>
-                    <path d="M26 14L32 18L38 14C38 14 36 10 32 10C28 10 26 14 26 14Z" fill="#32CD32"/>
-                    <circle cx="26" cy="28" r="1.5" fill="#FFD700"/>
-                    <circle cx="32" cy="32" r="1.5" fill="#FFD700"/>
-                    <circle cx="38" cy="28" r="1.5" fill="#FFD700"/>
-                    <circle cx="28" cy="38" r="1.5" fill="#FFD700"/>
-                    <circle cx="36" cy="38" r="1.5" fill="#FFD700"/>
-                    <circle cx="32" cy="44" r="1.5" fill="#FFD700"/>
-                </svg>
-            </div>
-
-            <!-- Fish -->
-            <div class="food-icon food-10">
-                <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <ellipse cx="36" cy="32" rx="20" ry="12" fill="#4682B4"/>
-                    <path d="M16 32L26 28L26 36L16 32Z" fill="#4682B4"/>
-                    <circle cx="44" cy="30" r="2" fill="#000"/>
-                    <path d="M52 28L58 32L52 36L52 28Z" fill="#5F9EA0"/>
-                    <path d="M30 24C30 24 34 28 36 28" stroke="#87CEEB" stroke-width="1.5"/>
-                    <path d="M30 32C30 32 34 32 38 32" stroke="#87CEEB" stroke-width="1.5"/>
-                    <path d="M30 40C30 40 34 36 36 36" stroke="#87CEEB" stroke-width="1.5"/>
-                </svg>
-            </div>
-
-            <!-- Orange -->
-            <div class="food-icon food-11">
-                <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="32" cy="36" r="20" fill="#FF8C00"/>
-                    <path d="M32 16C32 16 30 12 32 10C34 8 36 12 36 16" stroke="#228B22" stroke-width="2" stroke-linecap="round"/>
-                    <path d="M30 16C30 16 34 14 36 16" fill="#32CD32"/>
-                    <circle cx="32" cy="36" r="15" fill="#FFA500" opacity="0.5"/>
-                    <path d="M32 21L32 51M17 36L47 36" stroke="#FF8C00" stroke-width="1" opacity="0.3"/>
-                </svg>
-            </div>
-
-            <!-- Mushroom -->
-            <div class="food-icon food-12">
-                <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <ellipse cx="32" cy="28" rx="20" ry="14" fill="#DC143C"/>
-                    <circle cx="24" cy="24" r="3" fill="#FFF" opacity="0.8"/>
-                    <circle cx="36" cy="22" r="2.5" fill="#FFF" opacity="0.8"/>
-                    <circle cx="40" cy="28" r="2" fill="#FFF" opacity="0.8"/>
-                    <rect x="26" y="28" width="12" height="24" rx="6" fill="#F5DEB3"/>
-                    <ellipse cx="32" cy="52" rx="8" ry="3" fill="#DEB887"/>
-                </svg>
-            </div>
-        </div>
 
         <!-- Login Card -->
         <div class="login-card">
@@ -717,11 +573,7 @@
                 </button>
             </form>
 
-            <!-- Register Link -->
-            <p class="register-text">
-                Belum punya akun? 
-                <a href="{{ route('register') }}" class="register-link">Daftar disini</a>
-            </p>
+
         </div>
     </div>
 </x-guest-layout>

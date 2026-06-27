@@ -45,7 +45,7 @@ class NotificationController extends Controller
 foreach ($lowStocks as $item) {
     $notifications[] = [
         'type' => 'danger',
-        'message' => "Stok {$item->nama} tinggal {$item->stok}"
+        'message' => "Stok {$item->nama} tinggal {$item->qty}"
     ];
 }
 $totalLowStock = BahanBaku::whereColumn(

@@ -55,7 +55,7 @@ class StokGudang extends Model
         // Deduct from total stock in BahanBaku as well
         $bahan = BahanBaku::find($bahanBakuId);
         if ($bahan) {
-            $bahan->qty = max(0, $bahan->qty - $jumlah);
+            $bahan->stok = max(0, $bahan->stok - $jumlah);
             $bahan->save();
         }
     }
@@ -70,7 +70,7 @@ class StokGudang extends Model
         $bahan = BahanBaku::find($bahanBakuId);
         if (!$bahan) return;
 
-        $actualStock = $bahan->qty;
+        $actualStock = $bahan->stok;
         $fifoStock = self::cekStokTersedia($bahanBakuId);
 
         if ($fifoStock != $actualStock) {

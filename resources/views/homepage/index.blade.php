@@ -11,11 +11,11 @@
             DapoerMBG
         </h1>
         <p class="text-slate-500 text-base md:text-lg max-w-lg mx-auto">
-            Portal satu pintu untuk monitoring, distribusi, dan manajemen program Makan Bergizi Gratis.
+            Sistem Pelayanan Makanan Bergizi Gratis
         </p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-5xl">
+    <div class="grid grid-cols-1 gap-6 w-full max-w-lg mx-auto">
 
         @foreach ($portals as $portal)
             @php

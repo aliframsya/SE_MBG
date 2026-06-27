@@ -80,8 +80,8 @@ class Karyawan extends Authenticatable
         if (!$this->last_medical_checkup) {
             return false;
         }
-        // Valid if within the last 365 days
-        return $this->last_medical_checkup->diffInDays(now()) <= 365;
+        // Valid if within the last 90 days (3 months)
+        return $this->last_medical_checkup->diffInDays(now()) <= 90;
     }
 
     /**
@@ -109,11 +109,13 @@ class Karyawan extends Authenticatable
     /**
      * Hitung Kebutuhan Harian.
      */
-    public function hitungKebutuhanHarian($tanggal, $totalPM, $bufferPersen, $budgetHarian)
+    public function hitungKebutuhanHarian($tanggal, $pm_porsi_kecil, $pm_porsi_besar, $bufferPersen, $budgetHarian)
     {
         return KebutuhanHarian::create([
             'tanggal' => $tanggal,
-            'total_pm' => $totalPM,
+            'total_pm' => $pm_porsi_kecil + $pm_porsi_besar,
+            'pm_porsi_kecil' => $pm_porsi_kecil,
+            'pm_porsi_besar' => $pm_porsi_besar,
             'buffer_persen' => $bufferPersen,
             'budget_harian' => $budgetHarian,
         ]);

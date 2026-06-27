@@ -50,6 +50,7 @@
                         <th style="width: 5%;">No</th>
                         <th style="width: 10%;">Kode</th>
                         <th style="width: 15%;">Supplier</th>
+                        <th style="width: 15%;">Kategori</th>
                         <th style="width: 25%;">Alamat</th>
                         <th style="width: 15%;">Dapur</th>
                         <th style="width: 10%;">Kontak Person</th>
@@ -68,6 +69,7 @@
                             <td>{{ $suppliers->firstItem() + $index }}</td>
                             <td>{{ $supplier->kode }}</td>
                             <td>{{ $supplier->nama }}</td>
+                            <td>{{ $supplier->kategori }}</td>
                             <td class="text-wrap text-break">{{ $supplier->alamat }}</td>
                             <td>
                                 @foreach ($supplier->kitchens as $kitchen)
@@ -97,6 +99,7 @@
                                         <button type="button" class="btn btn-sm btn-warning btnEditSupplier" data-toggle="modal"
                                             data-target="#modalEditSupplier" data-id="{{ $supplier->id }}"
                                             data-kode="{{ $supplier->kode }}" data-nama="{{ $supplier->nama }}"
+                                            data-kategori="{{ $supplier->kategori }}"
                                             data-alamat="{{ $supplier->alamat }}"
                                             data-kitchens="{{ json_encode($supplier->kitchens->pluck('kode')) }}"
                                             data-kontak="{{ $supplier->kontak }}" data-nomor="{{ $supplier->nomor }}"
@@ -171,6 +174,17 @@
             <input id="nama_supplier" type="text" name="nama" class="form-control" required />
         </div>
         <div class="form-group mt-2">
+            <label>Kategori</label>
+            <select name="kategori" class="form-control" required>
+                <option value="">-- Pilih Kategori --</option>
+                <option value="Bahan Pokok (Beras, Minyak, Gula dll)">Bahan Pokok (Beras, Minyak, Gula dll)</option>
+                <option value="Sayur & Buah">Sayur & Buah</option>
+                <option value="Daging & Ikan">Daging & Ikan</option>
+                <option value="Bumbu & Rempah">Bumbu & Rempah</option>
+                <option value="Lainnya">Lainnya</option>
+            </select>
+        </div>
+        <div class="form-group mt-2">
             <label for="alamat_supplier">Alamat</label>
             <input id="alamat_supplier" type="text" name="alamat" class="form-control" required />
         </div>
@@ -214,6 +228,17 @@
         <div class="form-group">
             <label>Nama</label>
             <input type="text" id="edit_nama" name="nama" class="form-control" required />
+        </div>
+        <div class="form-group mt-2">
+            <label>Kategori</label>
+            <select name="kategori" id="edit_kategori" class="form-control" required>
+                <option value="">-- Pilih Kategori --</option>
+                <option value="Bahan Pokok (Beras, Minyak, Gula dll)">Bahan Pokok (Beras, Minyak, Gula dll)</option>
+                <option value="Sayur & Buah">Sayur & Buah</option>
+                <option value="Daging & Ikan">Daging & Ikan</option>
+                <option value="Bumbu & Rempah">Bumbu & Rempah</option>
+                <option value="Lainnya">Lainnya</option>
+            </select>
         </div>
         <div class="form-group">
             <label>Alamat</label>
@@ -303,6 +328,7 @@
             const id = this.dataset.id;
             document.getElementById('edit_kode').value = this.dataset.kode;
             document.getElementById('edit_nama').value = this.dataset.nama;
+            document.getElementById('edit_kategori').value = this.dataset.kategori;
             document.getElementById('edit_alamat').value = this.dataset.alamat;
             document.getElementById('edit_kontak').value = this.dataset.kontak;
             document.getElementById('edit_nomor').value = this.dataset.nomor;

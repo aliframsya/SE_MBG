@@ -38,31 +38,31 @@
             </div>
         </div>
 
-        {{-- 2. Widget Daftar Dapur (SCROLLABLE) --}}
+        {{-- 2. Widget Daftar Supplier (SCROLLABLE) --}}
         <div class="card card-info card-outline shadow-sm">
             <div class="card-header">
                 <h3 class="card-title">
-                    <i class="fas fa-utensils mr-1"></i> Daftar Dapur
+                    <i class="fas fa-utensils mr-1"></i> Daftar Supplier
                 </h3>
                 {{-- Badge jumlah total --}}
                 <div class="card-tools">
-                    <span class="badge badge-info" title="Total Dapur">{{ $kitchens->count() }} Unit</span>
+                    <span class="badge badge-info" title="Total Supplier">{{ $suppliers->count() }} Unit</span>
                 </div>
             </div>
             
             {{-- Bagian ini yang membuat list bisa di-scroll jika panjang --}}
             <div class="card-body p-0" style="max-height: 400px; overflow-y: auto;">
                 <ul class="nav nav-pills flex-column">
-                    @forelse ($kitchens as $kitchen)
+                    @forelse ($suppliers as $supplier)
                         <li class="nav-item border-bottom">
                             <span class="nav-link text-dark py-3">
-                                <i class="fas fa-store text-info mr-2"></i> {{ $kitchen->nama }}
+                                <i class="fas fa-store text-info mr-2"></i> {{ $supplier->nama }}
                             </span>
                         </li>
                     @empty
                         <li class="nav-item p-4 text-center text-muted">
                             <i class="fas fa-info-circle mb-2" style="font-size: 20px;"></i><br>
-                            Belum terhubung dengan dapur manapun.
+                            Belum ada supplier yang terdaftar.
                         </li>
                     @endforelse
                 </ul>

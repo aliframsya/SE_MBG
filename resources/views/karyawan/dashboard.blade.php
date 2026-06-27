@@ -16,17 +16,17 @@
 
     <style>
         :root {
-            --primary-grad: linear-gradient(135deg, #FF7E40 0%, #FF5100 100%);
+            --primary-grad: linear-gradient(135deg, #00C9FF 0%, #1E90FF 100%);
             --secondary-grad: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);
             --glass-bg: rgba(255, 255, 255, 0.85);
-            --glass-border: rgba(255, 81, 0, 0.08);
+            --glass-border: rgba(30, 144, 255, 0.08);
             --dark-blue: #0F172A;
-            --accent-orange: #FF5100;
+            --accent-blue: #1E90FF;
         }
 
         body {
             font-family: 'Outfit', sans-serif;
-            background: linear-gradient(135deg, #FFF9F6 0%, #FFEFE6 50%, #FFF9F6 100%);
+            background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 50%, #F0F9FF 100%);
             min-height: 100vh;
             color: #334155;
             overflow-x: hidden;
@@ -40,7 +40,7 @@
         .portal-header {
             background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(15px);
-            border-bottom: 1px solid rgba(255, 81, 0, 0.1);
+            border-bottom: 1px solid rgba(30, 144, 255, 0.1);
             position: sticky;
             top: 0;
             z-index: 1000;
@@ -54,7 +54,7 @@
             letter-spacing: -0.5px;
         }
         .logo span {
-            color: var(--accent-orange);
+            color: var(--accent-blue);
         }
 
         .portal-card {
@@ -62,14 +62,14 @@
             backdrop-filter: blur(20px);
             border: 1px solid var(--glass-border);
             border-radius: 24px;
-            box-shadow: 0 10px 30px rgba(255, 81, 0, 0.04);
+            box-shadow: 0 10px 30px rgba(30, 144, 255, 0.04);
             transition: all 0.3s ease;
             overflow: hidden;
             margin-bottom: 25px;
         }
         .portal-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 15px 35px rgba(255, 81, 0, 0.08);
+            box-shadow: 0 15px 35px rgba(30, 144, 255, 0.08);
         }
 
         .card-header-gradient {
@@ -91,11 +91,11 @@
         .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
             background: var(--primary-grad);
             color: #fff;
-            box-shadow: 0 8px 20px rgba(255, 81, 0, 0.25);
+            box-shadow: 0 8px 20px rgba(30, 144, 255, 0.25);
         }
         .nav-pills .nav-link:hover:not(.active) {
-            background: rgba(255, 81, 0, 0.05);
-            color: var(--accent-orange);
+            background: rgba(30, 144, 255, 0.05);
+            color: var(--accent-blue);
         }
 
         .btn-gradient-primary {
@@ -105,12 +105,12 @@
             border-radius: 12px;
             padding: 12px 25px;
             font-weight: 600;
-            box-shadow: 0 8px 20px rgba(255, 81, 0, 0.2);
+            box-shadow: 0 8px 20px rgba(30, 144, 255, 0.2);
             transition: all 0.3s ease;
         }
         .btn-gradient-primary:hover {
             transform: translateY(-1px);
-            box-shadow: 0 12px 24px rgba(255, 81, 0, 0.3);
+            box-shadow: 0 12px 24px rgba(30, 144, 255, 0.3);
             color: #fff;
         }
 
@@ -137,8 +137,8 @@
             transition: all 0.3s ease;
         }
         .form-control:focus {
-            border-color: var(--accent-orange);
-            box-shadow: 0 0 0 3px rgba(255, 81, 0, 0.15);
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(30, 144, 255, 0.15);
         }
 
         /* Badges */
@@ -172,7 +172,7 @@
         }
         .table-custom tr:hover {
             transform: scale(1.005);
-            box-shadow: 0 8px 12px rgba(255, 81, 0, 0.03);
+            box-shadow: 0 8px 12px rgba(30, 144, 255, 0.03);
         }
         .table-custom th {
             border: none;
@@ -205,7 +205,7 @@
         <div class="d-flex align-items-center" style="gap: 20px;">
             <div class="text-right d-none d-md-block">
                 <h6 class="mb-0 font-weight-bold">{{ $karyawan->nama }}</h6>
-                <span class="text-xs text-muted">{{ $karyawan->jabatan }} | NIK: {{ $karyawan->nik }}</span>
+                <span class="text-xs text-muted">NIK: {{ $karyawan->nik }}</span>
             </div>
             @php
                 $logoutRoute = Auth::guard('karyawan')->check() ? route('karyawan.logout') : route('logout');
@@ -283,7 +283,7 @@
                             <h3 class="font-weight-bold mb-4">Profil Karyawan</h3>
                             <div class="row align-items-center">
                                 <div class="col-md-3 text-center mb-4 mb-md-0">
-                                    <div class="bg-light d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 140px; height: 140px; border: 3px solid var(--accent-orange);">
+                                    <div class="bg-light d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 140px; height: 140px; border: 3px solid var(--accent-blue);">
                                         <i class="fas fa-user-tie fa-4x text-muted"></i>
                                     </div>
                                 </div>
@@ -323,10 +323,10 @@
                                 </div>
                             </div>
                             
-                            <hr class="my-5" style="border-color: rgba(255, 81, 0, 0.1);">
+                            <hr class="my-5" style="border-color: rgba(30, 144, 255, 0.1);">
                             
                             <h4 class="font-weight-bold mb-3">Status Medical Checkup</h4>
-                            <p class="text-muted">Karyawan pangan wajib memiliki hasil MCU valid kurang dari 1 tahun untuk memastikan higienitas pengolahan makanan.</p>
+                            <p class="text-muted">Karyawan pangan wajib memiliki hasil MCU valid kurang dari 3 bulan untuk memastikan higienitas pengolahan makanan.</p>
                             
                             <div class="p-4 rounded-lg bg-light">
                                 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -370,7 +370,7 @@
                                 <div class="portal-card p-4 text-center">
                                     <h4 class="font-weight-bold mb-4">Mesin Fingerprint</h4>
                                     <div class="my-4">
-                                        <i class="fas fa-fingerprint fa-6x text-orange mb-3" style="color: var(--accent-orange); filter: drop-shadow(0 0 15px rgba(255, 81, 0, 0.2));"></i>
+                                        <i class="fas fa-fingerprint fa-6x text-primary mb-3" style="color: var(--accent-blue); filter: drop-shadow(0 0 15px rgba(30, 144, 255, 0.2));"></i>
                                     </div>
                                     <p class="text-muted small mb-4">Tekan tombol di bawah untuk melakukan check-in (IN) atau check-out (OUT) kehadiran hari ini.</p>
                                     
@@ -449,7 +449,7 @@
                             <div class="col-md-5">
                                 {{-- UML USECASE: Tentukan Buffer --}}
                                 <div class="portal-card p-4 mb-3">
-                                    <h5 class="font-weight-bold mb-3"><i class="fas fa-percent mr-2" style="color: var(--accent-orange);"></i>Tentukan Buffer (pm)</h5>
+                                    <h5 class="font-weight-bold mb-3"><i class="fas fa-percent mr-2" style="color: var(--accent-blue);"></i>Tentukan Buffer (pm)</h5>
                                     <div class="form-group mb-2">
                                         <label class="small text-muted">Total Porsi (PM) untuk Hitung Buffer</label>
                                         <input type="number" id="calc_pm" class="form-control form-control-sm" placeholder="Contoh: 150" value="150">
@@ -457,14 +457,14 @@
                                     <button type="button" class="btn btn-sm btn-gradient-primary btn-block" onclick="calculateBuffer()">
                                         Hitung & Set Buffer
                                     </button>
-                                    <div id="calc_buffer_result" class="mt-2 small text-muted text-center" style="display:none; background: #fff8f5; padding: 10px; border-radius: 8px; border: 1px dashed var(--accent-orange);">
-                                        Hasil Buffer: <strong id="calc_qty" class="text-orange">0</strong> Porsi (yaitu <strong id="calc_pct">0</strong>%)
+                                    <div id="calc_buffer_result" class="mt-2 small text-muted text-center" style="display:none; background: #fff8f5; padding: 10px; border-radius: 8px; border: 1px dashed var(--accent-blue);">
+                                        Hasil Buffer: <strong id="calc_qty" class="text-primary">0</strong> Porsi (yaitu <strong id="calc_pct">0</strong>%)
                                     </div>
                                 </div>
 
                                 {{-- UML USECASE: Hitung Kebutuhan Harian --}}
                                 <div class="portal-card p-4">
-                                    <h5 class="font-weight-bold mb-3"><i class="fas fa-calculator mr-2" style="color: var(--accent-orange);"></i>Hitung Kebutuhan Harian</h5>
+                                    <h5 class="font-weight-bold mb-3"><i class="fas fa-calculator mr-2" style="color: var(--accent-blue);"></i>Hitung Kebutuhan Harian</h5>
                                     <form action="{{ route('karyawan.nutrition.store') }}" method="POST">
                                         @csrf
                                         <div class="form-group">
@@ -472,16 +472,21 @@
                                             <input type="date" name="tanggal" class="form-control" value="{{ now()->toDateString() }}" required>
                                         </div>
                                         <div class="form-group">
-                                            <label>Total Penerima Manfaat (PM)</label>
-                                            <input type="number" name="total_pm" class="form-control" placeholder="Porsi / Orang" value="150" required>
+                                            <label>PM Porsi Kecil (TK/SD 1-3)</label>
+                                            <input type="number" id="pm_porsi_kecil" name="pm_porsi_kecil" class="form-control" placeholder="Jumlah Porsi Kecil" value="0" required oninput="hitungOtomatisBudget()">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>PM Porsi Besar (SD 4-6/SMP/SMA)</label>
+                                            <input type="number" id="pm_porsi_besar" name="pm_porsi_besar" class="form-control" placeholder="Jumlah Porsi Besar" value="0" required oninput="hitungOtomatisBudget()">
                                         </div>
                                         <div class="form-group">
                                             <label>Buffer Persen (%)</label>
                                             <input type="number" step="0.1" name="buffer_persen" class="form-control" placeholder="Tambahan Buffer" value="10.0" required>
                                         </div>
                                         <div class="form-group">
-                                            <label>Budget Harian (Rp)</label>
-                                            <input type="number" name="budget_harian" class="form-control" placeholder="Maksimal Anggaran" value="5000000" required>
+                                            <label>Estimasi Budget Harian (Rp)</label>
+                                            <input type="text" id="estimasi_budget" class="form-control bg-light" value="Rp 0" readonly>
+                                            <small class="text-muted">Dihitung otomatis: (Porsi Kecil x Rp 8.000) + (Porsi Besar x Rp 10.000)</small>
                                         </div>
                                         <button type="submit" class="btn btn-gradient-primary btn-block">Simpan & Validasi Budget</button>
                                     </form>
@@ -506,7 +511,7 @@
                                                 @forelse($nutritionNeeds as $need)
                                                     <tr>
                                                         <td>{{ $need->tanggal->format('Y-m-d') }}</td>
-                                                        <td><span class="badge badge-info">{{ $need->total_pm }} PM</span></td>
+                                                        <td><span class="badge badge-info">{{ $need->total_pm }} PM</span><br><small class="text-muted">({{ $need->pm_porsi_kecil }} Kecil / {{ $need->pm_porsi_besar }} Besar)</small></td>
                                                         <td><strong>{{ $need->buffer_persen }}%</strong></td>
                                                         <td class="text-right">Rp {{ number_format($need->budget_harian, 0, ',', '.') }}</td>
                                                         <td>
@@ -654,7 +659,7 @@
                             <div class="col-md-5">
                                 {{-- Kalkulasi Gaji Karyawan (HitungGaji) --}}
                                 <div class="portal-card p-4 mb-3">
-                                    <h4 class="font-weight-bold mb-3"><i class="fas fa-wallet mr-2" style="color: var(--accent-orange);"></i>Kalkulasi Gaji Anda</h4>
+                                    <h4 class="font-weight-bold mb-3"><i class="fas fa-wallet mr-2" style="color: var(--accent-blue);"></i>Kalkulasi Gaji Anda</h4>
                                     <p class="text-muted small">Slip rincian gaji Anda saat ini yang dihitung otomatis berdasarkan data kehadiran.</p>
                                     
                                     <div class="p-3 rounded-lg bg-light">
@@ -669,7 +674,7 @@
                                         <hr class="my-2">
                                         <div class="d-flex justify-content-between align-items-center">
                                             <span class="text-muted font-weight-bold">Total Diterima (HitungGaji):</span>
-                                            <h5 class="font-weight-bold text-orange mb-0">Rp {{ number_format($karyawan->hitungGaji(), 0, ',', '.') }}</h5>
+                                            <h5 class="font-weight-bold text-primary mb-0">Rp {{ number_format($karyawan->hitungGaji(), 0, ',', '.') }}</h5>
                                         </div>
                                     </div>
                                 </div>
@@ -677,7 +682,7 @@
                                 {{-- Cek Sisa Budget & CRUD Budget --}}
                                 <div class="portal-card p-4">
                                     <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <h4 class="font-weight-bold mb-0"><i class="fas fa-chart-pie mr-2" style="color: var(--accent-orange);"></i>Budget Koperasi</h4>
+                                        <h4 class="font-weight-bold mb-0"><i class="fas fa-chart-pie mr-2" style="color: var(--accent-blue);"></i>Budget</h4>
                                         <button type="button" class="btn btn-xs btn-gradient-primary" data-toggle="modal" data-target="#modalAddBudget">
                                             <i class="fas fa-plus mr-1"></i> Tambah
                                         </button>
@@ -932,16 +937,16 @@
                         <input type="date" name="tanggal" id="edit_nut_tanggal" class="form-control" required>
                     </div>
                     <div class="form-group">
-                        <label>Total Penerima Manfaat (PM)</label>
-                        <input type="number" name="total_pm" id="edit_nut_total_pm" class="form-control" required>
+                        <label>PM Porsi Kecil</label>
+                        <input type="number" name="pm_porsi_kecil" id="edit_nut_pm_porsi_kecil" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>PM Porsi Besar</label>
+                        <input type="number" name="pm_porsi_besar" id="edit_nut_pm_porsi_besar" class="form-control" required>
                     </div>
                     <div class="form-group">
                         <label>Buffer Persen (%)</label>
                         <input type="number" step="0.1" name="buffer_persen" id="edit_nut_buffer_persen" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Budget Harian (Rp)</label>
-                        <input type="number" name="budget_harian" id="edit_nut_budget_harian" class="form-control" required>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -1219,10 +1224,10 @@
 
         function editNutrition(data) {
             document.getElementById('formEditNutrition').action = `/karyawan/nutrition/${data.id}`;
-            document.getElementById('edit_nut_tanggal').value = data.tanggal;
-            document.getElementById('edit_nut_total_pm').value = data.total_pm;
+            document.getElementById('edit_nut_tanggal').value = data.tanggal.substring(0, 10);
+            document.getElementById('edit_nut_pm_porsi_kecil').value = data.pm_porsi_kecil;
+            document.getElementById('edit_nut_pm_porsi_besar').value = data.pm_porsi_besar;
             document.getElementById('edit_nut_buffer_persen').value = data.buffer_persen;
-            document.getElementById('edit_nut_budget_harian').value = data.budget_harian;
             $('#modalEditNutrition').modal('show');
         }
 
@@ -1296,6 +1301,15 @@
             `;
             container.appendChild(row);
             editMenuItemIndex++;
+        }
+        function hitungOtomatisBudget() {
+            let porsiKecil = parseInt(document.getElementById('pm_porsi_kecil').value) || 0;
+            let porsiBesar = parseInt(document.getElementById('pm_porsi_besar').value) || 0;
+            let total = (porsiKecil * 8000) + (porsiBesar * 10000);
+            
+            // Format to Rupiah
+            let formatted = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(total);
+            document.getElementById('estimasi_budget').value = formatted;
         }
     </script>
 

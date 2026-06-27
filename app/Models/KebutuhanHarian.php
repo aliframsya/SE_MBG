@@ -11,6 +11,8 @@ class KebutuhanHarian extends Model
     protected $fillable = [
         'tanggal',
         'total_pm',
+        'pm_porsi_kecil',
+        'pm_porsi_besar',
         'buffer_persen',
         'budget_harian',
     ];

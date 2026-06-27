@@ -313,34 +313,27 @@ return [
     */
 
     'menu' => [
-    // Navbar items:
-    [
-        'type' => 'navbar-search',
-        'text' => 'search',
-        'topnav_right' => true,
-    ],
-
-    [
-        'text' => 'Notifikasi',
-        'icon' => 'fas fa-bell',
-        'url'  => 'notifications',
-        'topnav_right' => true,
-    ],
-
-    [
-        'type' => 'fullscreen-widget',
-        'topnav_right' => true,
-    ],
+        // Navbar items:
+        [
+            'type' => 'navbar-search',
+            'text' => 'search',
+            'topnav_right' => true,
+        ],
+        [
+            'text' => 'Notifikasi',
+            'icon' => 'fas fa-bell',
+            'url'  => 'notifications',
+            'topnav_right' => true,
+        ],
+        [
+            'type' => 'fullscreen-widget',
+            'topnav_right' => true,
+        ],
 
         // Sidebar items:
         [
             'type' => 'sidebar-menu-search',
             'text' => 'search',
-        ],
-        [
-            'text' => 'blog',
-            'url' => 'admin/blog',
-            'can' => 'manage-blog',
         ],
 
         [
@@ -349,161 +342,40 @@ return [
             'route' => 'dashboard.index',
         ],
 
-        // MASTER
         [
-            'text' => 'Master',
-            'icon' => 'fas fa-fw fa-utensils',
-            'submenu' => [
-                [
-                    'text' => 'Dapur',
-                    'icon' => 'fas fa-fw fa-fire-alt',
-                    'route' => 'master.kitchen.index',
-                    'can' => 'master.kitchen.view',
-                ],
-                [
-                    'text' => 'Supplier',
-                    'icon' => 'fas fa-store',
-                    'route' => 'master.supplier.index',
-                    'can' => 'master.supplier.view',
-                ],
-                [
-                    'text' => 'Region',
-                    'icon' => 'fas fa-map-marked-alt',
-                    'route' => 'master.region.index',
-                    'can' => 'master.region.view',
-                ],
-                [
-                    'text' => 'Satuan',
-                    'icon' => 'fas fa-sort-numeric-up',
-                    'route' => 'master.unit.index',
-                    'can' => 'master.unit.view',
-                ],
-                [
-                    'text' => 'Akun Bank',
-                    'icon' => 'fas fa-money-bill-wave',
-                    'route' => 'master.bank.view',
-                    'can' => 'master.bank.view'
-                ],
-                [
-                    'text' => 'Bahan Baku',
-                    'icon' => 'fas fa-fw fa-carrot',
-                    'route' => 'dashboard.master.bahan-baku.index',
-                    'can' => 'master.bahan-baku.view',
-                ],
-                [
-                    'text' => 'Operasional',
-                    'icon' => 'fas fa-fw fa-clipboard-list',
-                    'route' => 'master.operational.index',
-                    'can' => 'master.operational.view',
-                ],
-                [
-                    'text' => 'Nama Menu',
-                    'icon' => 'fas fa-fw fa-book-open',
-                    'route' => 'master.menu.index',
-                    'can' => 'master.menu.view',
-                ],
-            ],
+            'text' => 'Daftar Supplier',
+            'icon' => 'fas fa-store',
+            'route' => 'master.supplier.index',
+            'can' => 'master.supplier.view',
         ],
 
-        // SETUP
         [
-            'text' => 'Setup Data',
-            'icon' => 'fas fa-fw fa-tools',
-            'submenu' => [
-                [
-                    'text' => 'User',
-                    'icon' => 'fas fa-fw fa-users',
-                    'route' => 'setup.user.index',
-                    'can' => 'setup.user.view',
-                ],
-                [
-                    'text' => 'Role',
-                    'icon' => 'fas fa-user-cog',
-                    'route' => 'setup.role.index',
-                    'can' => 'setup.role.view',
-                ],
-            ],
+            'text' => 'Purchase Order',
+            'icon' => 'fas fa-shopping-cart',
+            'route' => 'admin.po.index',
+        ],
+        [
+            'text' => 'Pembayaran',
+            'icon' => 'fas fa-money-bill-wave',
+            'route' => 'admin.pembayaran.index',
+        ],
+        [
+            'text' => 'Penerimaan Barang',
+            'icon' => 'fas fa-boxes',
+            'route' => 'admin.penerimaan.index',
+        ],
+        [
+            'text' => 'Stok Gudang',
+            'icon' => 'fas fa-warehouse',
+            'route' => 'admin.stok.index',
+        ],
+        [
+            'text' => 'Distribusi Makanan',
+            'icon' => 'fas fa-truck',
+            'route' => 'distribusi.index',
         ],
 
-        // TRANSAKSI
-        [
-            'text' => 'Transaksi',
-            'icon' => 'fas fa-fw fa-exchange-alt',
-            'submenu' => [
-                [
-                    'text' => 'Simulasi Use Case (Admin)',
-                    'icon' => 'fas fa-shield-alt',
-                    'route' => 'admin-features.index',
-                ],
-                [
-                    'text' => 'Pengajuan Menu',
-                    'icon' => 'fas fa-fw fa-paper-plane',
-                    'route' => 'transaction.submission.index',
-                    'can'  => 'transaction.submission.view',
-                ],
-                [
-                    'text' => 'Daftar Permintaan',
-                    'icon' => 'fas fa-clipboard-list',
-                    'route' => 'transaction.submission-approval.index',
-                    'can'  => 'transaction.submission-approval.view',
-                ],
-                [
-                    'text' => 'Pengajuan Operasional',
-                    'icon' => 'fas fa-file-invoice-dollar',
-                    'route' => 'transaction.operational-submission.index',
-                    'can'  => 'transaction.operational-submission.view',
-                ],
-                [
-                    'text' => 'Daftar Biaya Operasional',
-                    'icon' => 'fas fa-clipboard-check',
-                    'route' => 'transaction.operational-approval.index',
-                    'can'  => 'transaction.operational-approval.view',
-                ],
-                [
-                    'text' => 'Beli Operasional',
-                    'icon' => 'fas fa-cart-plus',
-                ],
-            ],
-        ],
 
-        // LAPORAN
-        [
-            'text' => 'Laporan',
-            'icon' => 'fas fa-fw fa-file-alt',
-            'submenu' => [
-                [
-                    'text' => 'Bahan Baku Dapur',
-                    'icon' => 'fas fa-file-signature',
-                    'route' => 'report.sales-kitchen',
-                    'can'   => 'report.sales-kitchen.view',
-                ],
-                [
-                    'text' => 'Pembelian Operasional',
-                    'icon' => 'fas fa-file-signature',
-                    'route' => 'report.purchase-operational',
-                    'can'   => 'report.purchase-operational.view',
-                ],
-                [
-                    'text' => 'Selisih Bahan Baku',
-                    'icon' => 'fas fa-file-signature',
-                    'route' => 'report.profit',
-                    'can'   => 'report.profit.view',
-                ],
-                [
-                    'text' => 'Total Operasional',
-                    'url'  => 'dashboard/laporan/total-operasional',
-                    'icon' => 'fas fa-fw fa-file-invoice-dollar',
-                    'can'  => 'report.total-operational.view',
-                ],
-            ],
-        ],
-
-        // USER MANUAL
-        [
-            'text' => 'User Manual',
-            'icon' => 'fas fa-book',
-            'route' => 'user-manual.index',
-        ],
     ],
 
     /*

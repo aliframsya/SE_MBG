@@ -103,31 +103,11 @@ class DashboardController extends Controller
     {
         return Cache::remember('dashboard_summary_' . auth()->id(), 30, function () use ($kitchenIds) {
 
-            $submissionBase = $this->filterKitchen(Submission::query()->whereNull('parent_id'), $kitchenIds);
             return [
-                'total_kitchen' => $kitchenIds === null
-                    ? Kitchen::count()
-                    : count($kitchenIds),
-
-                'total_supplier' => $kitchenIds === null
-                    ? Supplier::count()
-                    : Supplier::whereHas('kitchens', function ($q) use ($kitchenIds) {
-                        $q->whereIn('kitchens.id', $kitchenIds);
-                    })->count(),
-
-                'total_submission' => (clone $submissionBase)->count(),
-
-                'diajukan' => (clone $submissionBase)
-                    ->where('status', 'diajukan')
-                    ->count(),
-
-                'selesai' => (clone $submissionBase)
-                    ->where('status', 'selesai')
-                    ->count(),
-
-                'diproses' => (clone $submissionBase)
-                    ->where('status', 'diproses')
-                    ->count(),
+                'total_supplier' => \App\Models\Supplier::count(),
+                'total_po' => \App\Models\PurchaseOrder::count(),
+                'total_penerimaan' => \App\Models\PenerimaanBarang::count(),
+                'total_stok' => \App\Models\StokGudang::count(),
             ];
         });
     }
@@ -151,9 +131,9 @@ class DashboardController extends Controller
 
         $data = $query->pluck('total', 'month')->toArray();
 
-        // Supaya 12 bulan selalu ada
+        // Supaya 7 bulan (Jan - Jul) selalu ada
         $months = [];
-        for ($i = 1; $i <= 12; $i++) {
+        for ($i = 1; $i <= 7; $i++) {
             $months[$i] = $data[$i] ?? 0;
         }
 

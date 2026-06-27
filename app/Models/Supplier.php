@@ -14,6 +14,7 @@ class Supplier extends Model
     protected $fillable = [
         'kode',
         'nama',
+        'kategori',
         'alamat',
         'kontak',
         'nomor',
