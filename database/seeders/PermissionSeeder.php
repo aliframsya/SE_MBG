@@ -62,6 +62,11 @@ class PermissionSeeder extends Seeder
             'master.medicalcheckup.update',
             'master.medicalcheckup.delete',
 
+            'master.school.view',
+            'master.school.create',
+            'master.school.update',
+            'master.school.delete',
+
             
 
             // SETUP

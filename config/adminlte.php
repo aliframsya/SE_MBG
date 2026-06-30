@@ -374,6 +374,12 @@ return [
             'icon' => 'fas fa-truck',
             'route' => 'distribusi.index',
         ],
+        [
+            'text' => 'Data Sekolah',
+            'icon' => 'fas fa-school',
+            'route' => 'master.school.index',
+            'can'  => 'master.school.view',
+        ],
 
 
     ],
