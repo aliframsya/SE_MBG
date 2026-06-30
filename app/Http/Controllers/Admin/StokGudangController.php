@@ -13,7 +13,7 @@ class StokGudangController extends Controller
     {
         $stokGudangs = StokGudang::with('bahanBaku.kitchen')->orderBy('tanggal_masuk', 'desc')->get();
         // Hanya tampilkan bahan baku yang ada di daftar stok gudang untuk mempermudah pencarian
-        $bahanBakus = BahanBaku::with('kitchen')->whereIn('id', StokGudang::select('bahan_baku_id'))->get();
+        $bahanBakus = BahanBaku::with('kitchen')->get();
         
         return view('admin.stok.index', compact('stokGudangs', 'bahanBakus'));
     }
