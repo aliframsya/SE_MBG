@@ -18,6 +18,7 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\SubmissionController;
 use App\Http\Controllers\PurchaseBahanBakuController;
 use App\Http\Controllers\RegionController;
+use App\Http\Controllers\SchoolController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\OperationalController;
 use App\Http\Controllers\OperationalSubmissionController;
@@ -115,6 +116,16 @@ Route::middleware(['auth', 'disetujui'])->group(function () {
             Route::post('/', 'store')->middleware('permission:master.region.create')->name('store');
             Route::put('/{id}', 'update')->middleware('permission:master.region.update')->name('update');
             Route::delete('/{id}', 'destroy')->middleware('permission:master.region.delete')->name('destroy');
+        });
+
+    Route::prefix('dashboard/master/sekolah')
+        ->name('master.school.')
+        ->controller(SchoolController::class)
+        ->group(function () {
+            Route::get('/', 'index')->middleware('permission:master.school.view')->name('index');
+            Route::post('/', 'store')->middleware('permission:master.school.create')->name('store');
+            Route::put('/{id}', 'update')->middleware('permission:master.school.update')->name('update');
+            Route::delete('/{id}', 'destroy')->middleware('permission:master.school.delete')->name('destroy');
         });
 
     Route::prefix('dashboard/master/operational')
