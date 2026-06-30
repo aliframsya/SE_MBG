@@ -13,7 +13,7 @@
                 <div class="card-header"><h3 class="card-title">Informasi PO</h3></div>
                 <div class="card-body">
                     <p><strong>Status:</strong> {{ strtoupper($po->status) }}</p>
-                    <p><strong>Supplier:</strong> {{ $po->supplier->nama }}</p>
+                    <p><strong>Supplier:</strong> {{ $po->supplier?->nama ?? 'Supplier Terhapus' }}</p>
                     <p><strong>Tanggal PO:</strong> {{ $po->tanggal_po->format('d/m/Y') }}</p>
                     <p><strong>Total Harga:</strong> Rp {{ number_format($po->total_harga, 0, ',', '.') }}</p>
                 </div>
@@ -57,7 +57,7 @@
                 <tbody>
                     @foreach($po->details as $d)
                         <tr>
-                            <td>{{ $d->bahanBaku->nama }}</td>
+                            <td>{{ $d->bahanBaku?->nama ?? 'Bahan Baku Terhapus' }}</td>
                             <td>{{ $d->kuantitas_pesan }}</td>
                             <td>Rp {{ number_format($d->harga_satuan, 0, ',', '.') }}</td>
                             <td>Rp {{ number_format($d->kuantitas_pesan * $d->harga_satuan, 0, ',', '.') }}</td>

@@ -10,7 +10,7 @@
         <tr>
             <th>No</th>
             <th>Kode</th>
-            <th>NIK</th>
+            <th>ID</th>
             <th>Nama</th>
             <th>Jabatan</th>
             <th>Dapur</th>

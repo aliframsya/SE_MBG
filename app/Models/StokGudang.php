@@ -56,6 +56,7 @@ class StokGudang extends Model
         $bahan = BahanBaku::find($bahanBakuId);
         if ($bahan) {
             $bahan->stok = max(0, $bahan->stok - $jumlah);
+            $bahan->qty = max(0, $bahan->qty - $jumlah);
             $bahan->save();
         }
     }

@@ -43,7 +43,7 @@
                     @forelse($purchaseOrders as $po)
                         <tr>
                             <td>{{ $po->kode_po }}</td>
-                            <td>{{ $po->supplier->nama }}</td>
+                            <td>{{ $po->supplier?->nama ?? '-' }}</td>
                             <td>{{ $po->tanggal_po->format('d/m/Y') }}</td>
                             <td>Rp {{ number_format($po->total_harga, 0, ',', '.') }}</td>
                             <td>
@@ -56,12 +56,12 @@
                                 <a href="{{ route('admin.po.show', $po->id) }}" class="btn btn-xs btn-info">Detail</a>
                                 
                                 @php
-                                    $waNumber = preg_replace('/[^0-9]/', '', $po->supplier->nomor);
-                                    if(substr($waNumber, 0, 1) == '0') {
+                                    $waNumber = preg_replace('/[^0-9]/', '', $po->supplier?->nomor ?? '');
+                                    if(strlen($waNumber) > 0 && substr($waNumber, 0, 1) == '0') {
                                         $waNumber = '62' . substr($waNumber, 1);
                                     }
                                     
-                                    $waText = "Halo " . $po->supplier->nama . ",\n\nBerikut adalah rincian Purchase Order (PO) kami:\nKode PO: " . $po->kode_po . "\nTanggal: " . $po->tanggal_po->format('d/m/Y') . "\n\nBarang yang dipesan:\n";
+                                    $waText = "Halo " . ($po->supplier?->nama ?? 'Supplier') . ",\n\nBerikut adalah rincian Purchase Order (PO) kami:\nKode PO: " . $po->kode_po . "\nTanggal: " . $po->tanggal_po->format('d/m/Y') . "\n\nBarang yang dipesan:\n";
                                     foreach($po->details as $idx => $detail) {
                                         $waText .= ($idx+1) . ". " . $detail->bahanBaku->nama . " - " . $detail->kuantitas_pesan . " " . ($detail->bahanBaku->unit->nama ?? '') . "\n";
                                     }

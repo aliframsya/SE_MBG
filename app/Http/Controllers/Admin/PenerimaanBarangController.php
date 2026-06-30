@@ -83,14 +83,43 @@ class PenerimaanBarangController extends Controller
         $request->validate([
             'tanggal_terima' => 'required|date',
             'kondisi_bahan' => 'required|string',
-            // For simplicity, we disable changing rijek qty because it affects stock dynamically. 
-            // In a real scenario, this would need complex reversal logic.
+            'kuantitas_rijek' => 'required|numeric|min:0',
         ]);
+
+        $old_rijek = $penerimaan->kuantitas_rijek;
+        $new_rijek = $request->kuantitas_rijek;
 
         $penerimaan->update([
             'tanggal_terima' => $request->tanggal_terima,
             'kondisi_bahan' => $request->kondisi_bahan,
+            'kuantitas_rijek' => $new_rijek,
+            'status_rijek' => $new_rijek > 0,
         ]);
+
+        if ($old_rijek != $new_rijek) {
+            $diff = $old_rijek - $new_rijek;
+            $po = $penerimaan->purchaseOrder;
+            if ($po) {
+                foreach ($po->details as $detail) {
+                    $bahan = $detail->bahanBaku;
+                    if ($bahan) {
+                        $detail->kuantitas_diterima += $diff;
+                        $detail->save();
+
+                        $bahan->qty += $diff;
+                        $bahan->save();
+
+                        \App\Models\StokGudang::create([
+                            'bahan_baku_id' => $bahan->id,
+                            'tanggal_masuk' => now()->toDateString(),
+                            'kuantitas' => $diff,
+                            'lokasi_gudang' => 'Penyesuaian Edit QC',
+                            'metode_fifo' => 'FIFO',
+                        ]);
+                    }
+                }
+            }
+        }
 
         return redirect()->route('admin.penerimaan.index')->with('success', "Data penerimaan berhasil diperbarui.");
     }

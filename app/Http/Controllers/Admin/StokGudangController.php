@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\StokGudang;
 use App\Models\BahanBaku;
+use App\Models\DetailPO;
 use Illuminate\Http\Request;
 
 class StokGudangController extends Controller
@@ -12,10 +13,26 @@ class StokGudangController extends Controller
     public function index()
     {
         $stokGudangs = StokGudang::with('bahanBaku.kitchen')->orderBy('tanggal_masuk', 'desc')->get();
-        // Hanya tampilkan bahan baku yang ada di daftar stok gudang untuk mempermudah pencarian
-        $bahanBakus = BahanBaku::with('kitchen')->whereIn('id', StokGudang::select('bahan_baku_id'))->get();
-        
-        return view('admin.stok.index', compact('stokGudangs', 'bahanBakus'));
+        // Semua bahan baku untuk dropdown rekonsiliasi
+        $bahanBakus = BahanBaku::with('kitchen')->orderBy('nama')->get();
+        $suppliers = \App\Models\Supplier::with('kitchens')->get();
+
+        // Bahan baku yang punya stok FIFO > 0 (untuk dropdown keluarkan)
+        $bahanBakuDenganStok = BahanBaku::with('kitchen')
+            ->has('stokGudangs')
+            ->withSum('stokGudangs', 'kuantitas')
+            ->get()
+            ->filter(fn($item) => $item->stok_gudangs_sum_kuantitas > 0)
+            ->sortBy('nama');
+
+        // Cek stok kritis per lot FIFO (kuantitas > 0 dan ≤ 50)
+        $stokKritis = StokGudang::with('bahanBaku.kitchen')
+            ->where('kuantitas', '>', 0)
+            ->where('kuantitas', '<=', 50)
+            ->orderBy('kuantitas', 'asc')
+            ->get();
+
+        return view('admin.stok.index', compact('stokGudangs', 'bahanBakus', 'suppliers', 'bahanBakuDenganStok', 'stokKritis'));
     }
 
     public function keluarkanFIFO(Request $request)
@@ -34,7 +51,20 @@ class StokGudangController extends Controller
 
         StokGudang::keluarkanFIFO($bahan->id, $request->jumlah);
 
-        return back()->with('success', "Berhasil mengeluarkan {$request->jumlah} unit {$bahan->nama} menggunakan metode FIFO.");
+        // Cek stok kritis setelah pengeluaran
+        $sisaStok = StokGudang::cekStokTersedia($bahan->id);
+        $message = "Berhasil mengeluarkan {$request->jumlah} unit {$bahan->nama} menggunakan metode FIFO.";
+
+        if ($sisaStok <= 0) {
+            return back()->with('success', $message)
+                ->with('stok_habis', "🚨 STOK HABIS: {$bahan->nama} sudah habis (0 unit)! Segera lakukan pemesanan ulang.");
+        }
+        if ($sisaStok <= 50) {
+            return back()->with('success', $message)
+                ->with('stok_kritis', "⚠️ STOK KRITIS: {$bahan->nama} tersisa {$sisaStok} unit! Segera lakukan pemesanan ulang.");
+        }
+
+        return back()->with('success', $message);
     }
 
     public function rekonsiliasiFIFO(Request $request)
@@ -69,11 +99,19 @@ class StokGudangController extends Controller
             'bahan_baku_id' => $request->bahan_baku_id,
             'kuantitas' => $request->kuantitas,
             'tanggal_masuk' => $request->tanggal_masuk,
-            'lokasi_gudang' => $request->lokasi_gudang,
-            'metode_fifo' => 'FIFO-' . date('Ymd', strtotime($request->tanggal_masuk)),
+            'lokasi_gudang' => $request->lokasi_gudang ?? 'Gudang Utama',
+            'metode_fifo' => 'FIFO',
         ]);
 
-        return redirect()->route('admin.stok.index')->with('success', 'Data stok (lot) berhasil ditambahkan secara manual.');
+        // Sync bahan_baku.stok dan qty
+        $bahan = BahanBaku::find($request->bahan_baku_id);
+        if ($bahan) {
+            $bahan->stok += $request->kuantitas;
+            $bahan->qty += $request->kuantitas;
+            $bahan->save();
+        }
+
+        return redirect()->route('admin.stok.index')->with('success', "Berhasil menambahkan {$request->kuantitas} unit ke stok gudang.");
     }
 
     public function show($id)

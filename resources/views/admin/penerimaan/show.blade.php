@@ -41,8 +41,15 @@
                         </tr>
                         <tr>
                             <th>Status QC Internal</th>
-                            <td>{{ $penerimaan->cekKualitas() }}</td>
+                            <td>
+                                @if($penerimaan->cekKualitas() == 'Lolos QC')
+                                    <span class="badge badge-success">{{ $penerimaan->cekKualitas() }}</span>
+                                @else
+                                    <span class="badge badge-danger">{{ $penerimaan->cekKualitas() }}</span>
+                                @endif
+                            </td>
                         </tr>
+
                     </table>
                 </div>
                 <div class="card-footer">

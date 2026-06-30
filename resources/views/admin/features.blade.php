@@ -437,7 +437,7 @@
                                             <form action="{{ route('admin-features.karyawan.store') }}" method="POST">
                                                 @csrf
                                                 <div class="form-group">
-                                                    <label>NIK</label>
+                                                    <label>ID</label>
                                                     <input type="text" name="nik" class="form-control" placeholder="Contoh: 123456" required>
                                                 </div>
                                                 <div class="form-group">
@@ -479,7 +479,7 @@
                                                 <thead class="thead-light">
                                                     <tr>
                                                         <th>Kode</th>
-                                                        <th>NIK</th>
+                                                        <th>ID</th>
                                                         <th>Nama</th>
                                                         <th>Jabatan / STR</th>
                                                         <th>Gaji Periode</th>

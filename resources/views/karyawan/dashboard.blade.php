@@ -205,7 +205,7 @@
         <div class="d-flex align-items-center" style="gap: 20px;">
             <div class="text-right d-none d-md-block">
                 <h6 class="mb-0 font-weight-bold">{{ $karyawan->nama }}</h6>
-                <span class="text-xs text-muted">NIK: {{ $karyawan->nik }}</span>
+                <span class="text-xs text-muted">ID: {{ $karyawan->nik }}</span>
             </div>
             @php
                 $logoutRoute = Auth::guard('karyawan')->check() ? route('karyawan.logout') : route('logout');
@@ -294,7 +294,7 @@
                                             <td><strong>{{ $karyawan->nama }}</strong></td>
                                         </tr>
                                         <tr>
-                                            <th class="pl-0 text-muted">NIK</th>
+                                            <th class="pl-0 text-muted">ID</th>
                                             <td><code>{{ $karyawan->nik }}</code></td>
                                         </tr>
                                         <tr>

@@ -9,7 +9,7 @@
     <label>Kode</label>
     <input type="text" name="kode" class="form-control" required>
 
-    <label>NIK</label>
+    <label>ID</label>
     <input type="text" name="nik" class="form-control" required>
 
     <label>Nama</label>

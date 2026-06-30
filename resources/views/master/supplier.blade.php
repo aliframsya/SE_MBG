@@ -175,14 +175,16 @@
         </div>
         <div class="form-group mt-2">
             <label>Kategori</label>
-            <select name="kategori" class="form-control" required>
-                <option value="">-- Pilih Kategori --</option>
-                <option value="Bahan Pokok (Beras, Minyak, Gula dll)">Bahan Pokok (Beras, Minyak, Gula dll)</option>
-                <option value="Sayur & Buah">Sayur & Buah</option>
-                <option value="Daging & Ikan">Daging & Ikan</option>
-                <option value="Bumbu & Rempah">Bumbu & Rempah</option>
-                <option value="Lainnya">Lainnya</option>
-            </select>
+            <div class="row" style="max-height: 150px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; border-radius: 4px;">
+                @foreach($bahanBakus as $index => $bb)
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="kategori[]" value="{{ $bb->nama }}" id="add_cat_bb_{{ $index }}">
+                            <label class="form-check-label" for="add_cat_bb_{{ $index }}">{{ $bb->nama }}</label>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
         </div>
         <div class="form-group mt-2">
             <label for="alamat_supplier">Alamat</label>
@@ -231,14 +233,16 @@
         </div>
         <div class="form-group mt-2">
             <label>Kategori</label>
-            <select name="kategori" id="edit_kategori" class="form-control" required>
-                <option value="">-- Pilih Kategori --</option>
-                <option value="Bahan Pokok (Beras, Minyak, Gula dll)">Bahan Pokok (Beras, Minyak, Gula dll)</option>
-                <option value="Sayur & Buah">Sayur & Buah</option>
-                <option value="Daging & Ikan">Daging & Ikan</option>
-                <option value="Bumbu & Rempah">Bumbu & Rempah</option>
-                <option value="Lainnya">Lainnya</option>
-            </select>
+            <div class="row" style="max-height: 150px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; border-radius: 4px;">
+                @foreach($bahanBakus as $index => $bb)
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input class="form-check-input edit-kategori-checkbox" type="checkbox" name="kategori[]" value="{{ $bb->nama }}" id="edit_cat_bb_{{ $index }}">
+                            <label class="form-check-label" for="edit_cat_bb_{{ $index }}">{{ $bb->nama }}</label>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
         </div>
         <div class="form-group">
             <label>Alamat</label>
@@ -328,7 +332,12 @@
             const id = this.dataset.id;
             document.getElementById('edit_kode').value = this.dataset.kode;
             document.getElementById('edit_nama').value = this.dataset.nama;
-            document.getElementById('edit_kategori').value = this.dataset.kategori;
+            
+            const kategoriArr = (this.dataset.kategori || '').split(',').map(item => item.trim());
+            document.querySelectorAll('.edit-kategori-checkbox').forEach(box => {
+                box.checked = kategoriArr.includes(box.value);
+            });
+            
             document.getElementById('edit_alamat').value = this.dataset.alamat;
             document.getElementById('edit_kontak').value = this.dataset.kontak;
             document.getElementById('edit_nomor').value = this.dataset.nomor;
@@ -415,5 +424,6 @@
 
     setupFileValidation('gambar', 'edit_preview_gambar');
     setupFileValidation('ttd', 'edit_preview_ttd');
+
 </script>
 @endpush

@@ -43,11 +43,12 @@ $pendingCount = \App\Models\Submission::where('status','diajukan')->count();
 
 $rejectedCount = \App\Models\Submission::where('status','ditolak')->count();
 
-$lowStockCount = \App\Models\BahanBaku::whereColumn(
-    'stok',
-    '<=',
-    'stok_minimal'
-)->count();
+$lowStockCount = \App\Models\BahanBaku::has('stokGudangs')
+    ->withSum('stokGudangs', 'kuantitas')
+    ->get()
+    ->filter(function($item) {
+        return $item->stok_gudangs_sum_kuantitas <= 50;
+    })->count();
 @endphp
 
 <div class="row mb-3">
@@ -293,6 +294,12 @@ $lowStockCount = \App\Models\BahanBaku::whereColumn(
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            animation: {
+                animateRotate: true,
+                animateScale: true,
+                duration: 1500,
+                easing: 'easeOutQuart'
+            },
             plugins: {
                 legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } },
                 tooltip: {

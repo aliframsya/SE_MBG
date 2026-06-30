@@ -59,8 +59,9 @@ class SupplierController extends Controller
         $kodeBaru = $this->generateKode();
 
         $canManage = $this->canManage();
+        $bahanBakus = \App\Models\BahanBaku::select('nama')->distinct()->orderBy('nama')->get();
 
-        return view('master.supplier', compact('suppliers', 'kitchens', 'kodeBaru', 'canManage','canCreate', 'canDelete'));
+        return view('master.supplier', compact('suppliers', 'kitchens', 'kodeBaru', 'canManage','canCreate', 'canDelete', 'bahanBakus'));
     }
 
 
@@ -74,7 +75,8 @@ class SupplierController extends Controller
         // Validasi input
         $request->validate([
             'nama' => 'required|string|max:255',
-            'kategori' => 'nullable|string|max:255',
+            'kategori' => 'nullable|array',
+            'kategori.*' => 'string',
             'alamat' => 'required|string|max:255',
             'kontak' => 'required|string|max:255',
             'nomor' => 'required|string|max:20',
@@ -90,7 +92,7 @@ class SupplierController extends Controller
         $supplier = Supplier::create([
             'kode' => self::generateKode(),
             'nama' => $request->nama,
-            'kategori' => $request->kategori,
+            'kategori' => $request->kategori ? implode(', ', $request->kategori) : null,
             'alamat' => $request->alamat,
             'kontak' => $request->kontak,
             'nomor' => $request->nomor,
@@ -177,7 +179,8 @@ class SupplierController extends Controller
         $request->validate([
             'kode' => 'required|unique:suppliers,kode,' . $supplier->id,
             'nama' => 'required|string|max:255',
-            'kategori' => 'nullable|string|max:255',
+            'kategori' => 'nullable|array',
+            'kategori.*' => 'string',
             'alamat' => 'required|string|max:255',
             'kontak' => 'required|string|max:255',
             'nomor' => 'required|string|max:20',
@@ -189,7 +192,7 @@ class SupplierController extends Controller
 
         $supplier->update([
             'nama' => $request->nama,
-            'kategori' => $request->kategori,
+            'kategori' => $request->kategori ? implode(', ', $request->kategori) : null,
             'alamat' => $request->alamat,
             'kontak' => $request->kontak,
             'nomor' => $request->nomor,

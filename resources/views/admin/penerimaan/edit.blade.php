@@ -34,6 +34,12 @@
                     <label>Kondisi Bahan (Catatan QC)</label>
                     <input type="text" name="kondisi_bahan" class="form-control" value="{{ $penerimaan->kondisi_bahan }}" required>
                 </div>
+
+                <div class="form-group">
+                    <label>Total Kuantitas Rijek (Jika Ada)</label>
+                    <input type="number" step="0.1" name="kuantitas_rijek" class="form-control" value="{{ $penerimaan->kuantitas_rijek }}" required>
+                    <small class="text-muted">Isi dengan 0 jika tidak ada barang yang rijek/rusak.</small>
+                </div>
             </div>
             <div class="card-footer">
                 <button type="submit" class="btn btn-warning">Update Data</button>

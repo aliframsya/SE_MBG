@@ -76,7 +76,7 @@
                         <dd class="font-medium text-slate-800">{{ $karyawan->kode }}</dd>
                     </div>
                     <div class="flex justify-between py-2.5">
-                        <dt class="text-slate-500">NIK</dt>
+                        <dt class="text-slate-500">ID</dt>
                         <dd class="font-medium text-slate-800">{{ $karyawan->nik }}</dd>
                     </div>
                     <div class="flex justify-between py-2.5">

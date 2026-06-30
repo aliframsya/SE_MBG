@@ -9,11 +9,12 @@ $rejectedCount = \App\Models\Submission::where(
     'ditolak'
 )->count();
 
-$lowStockCount = \App\Models\BahanBaku::whereColumn(
-    'stok',
-    '<=',
-    'stok_minimal'
-)->count();
+$lowStockCount = \App\Models\BahanBaku::has('stokGudangs')
+    ->withSum('stokGudangs', 'kuantitas')
+    ->get()
+    ->filter(function($item) {
+        return $item->stok_gudangs_sum_kuantitas <= 50;
+    })->count();
 
 $totalNotif =
     $pendingCount +

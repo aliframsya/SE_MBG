@@ -55,7 +55,7 @@
                 <div class="card-header"><h3 class="card-title">Bukti Transfer</h3></div>
                 <div class="card-body text-center">
                     @if($pembayaran->bukti_transfer)
-                        <img src="{{ asset('storage/' . $pembayaran->bukti_transfer) }}" alt="Bukti Transfer" class="img-fluid img-thumbnail" style="max-height: 300px;">
+                        <img src="{{ asset('galeri/' . $pembayaran->bukti_transfer) }}" alt="Bukti Transfer" class="img-fluid img-thumbnail" style="max-height: 300px;">
                     @else
                         <p class="text-muted">Tidak ada lampiran bukti transfer.</p>
                     @endif

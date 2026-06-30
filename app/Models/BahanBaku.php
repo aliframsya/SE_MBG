@@ -32,4 +32,9 @@ class BahanBaku extends Model
     {
         return $this->hasMany(RecipeBahanBaku::class);
     }
+
+    public function stokGudangs()
+    {
+        return $this->hasMany(StokGudang::class, 'bahan_baku_id');
+    }
 }

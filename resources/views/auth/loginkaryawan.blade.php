@@ -196,7 +196,7 @@
             <div class="login-header">
                 <div class="login-icon"><i class="fas fa-id-badge"></i></div>
                 <h1 class="login-title">Portal Karyawan</h1>
-                <p class="login-subtitle">Masuk dengan NIK dan password Anda</p>
+                <p class="login-subtitle">Masuk dengan ID dan password Anda</p>
             </div>
 
             @if (session('status'))
@@ -207,10 +207,10 @@
                 @csrf
 
                 <div class="form-group">
-                    <label for="nik" class="form-label">NIK</label>
+                    <label for="nik" class="form-label">ID</label>
                     <div class="input-wrapper">
                         <input id="nik" type="text" name="nik" value="{{ old('nik') }}"
-                               class="form-input" placeholder="Masukkan NIK" autofocus>
+                               class="form-input" placeholder="Masukkan ID" autofocus>
                     </div>
                     @error('nik')
                         <span class="error-message">{{ $message }}</span>
