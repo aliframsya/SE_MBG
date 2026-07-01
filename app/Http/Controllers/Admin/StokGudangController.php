@@ -13,7 +13,6 @@ class StokGudangController extends Controller
     public function index()
     {
         $stokGudangs = StokGudang::with('bahanBaku.kitchen')->orderBy('tanggal_masuk', 'desc')->get();
-<<<<<<< HEAD
         // Semua bahan baku untuk dropdown rekonsiliasi
         $bahanBakus = BahanBaku::with('kitchen')->orderBy('nama')->get();
         $suppliers = \App\Models\Supplier::with('kitchens')->get();
@@ -34,12 +33,6 @@ class StokGudangController extends Controller
             ->get();
 
         return view('admin.stok.index', compact('stokGudangs', 'bahanBakus', 'suppliers', 'bahanBakuDenganStok', 'stokKritis'));
-=======
-        // Hanya tampilkan bahan baku yang ada di daftar stok gudang untuk mempermudah pencarian
-        $bahanBakus = BahanBaku::with('kitchen')->get();
-        
-        return view('admin.stok.index', compact('stokGudangs', 'bahanBakus'));
->>>>>>> 8d88eb25bd745b43588f4bc712169a7c567a591e
     }
 
     public function keluarkanFIFO(Request $request)

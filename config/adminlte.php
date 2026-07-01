@@ -320,6 +320,7 @@ return [
             'topnav_right' => true,
         ],
         [
+            'key'  => 'notifikasi',
             'text' => 'Notifikasi',
             'icon' => 'fas fa-bell',
             'url'  => 'notifications',
@@ -380,7 +381,6 @@ return [
             'route' => 'master.school.index',
             'can'  => 'master.school.view',
         ],
-
 
     ],
 

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Submission;
 use App\Models\BahanBaku;
 use App\Models\StokGudang;
 
@@ -12,27 +11,9 @@ class NotificationController extends Controller
     {
         $notifications = [];
 
-        // Pengajuan menunggu approval
-        $pendingSubmissions = Submission::where('status', 'diajukan')->get();
-
-        foreach ($pendingSubmissions as $submission) {
-            $notifications[] = [
-                'type' => 'warning',
-                'message' => "Pengajuan #{$submission->id} menunggu approval"
-            ];
-        }
-
-        // Pengajuan ditolak
-        $rejectedSubmissions = Submission::where('status', 'ditolak')->get();
-
-        foreach ($rejectedSubmissions as $submission) {
-            $notifications[] = [
-                'type' => 'danger',
-                'message' => "Pengajuan #{$submission->id} ditolak"
-            ];
-        }
-
-        // Stok kritis — cek per lot FIFO yang kuantitas > 0 dan <= 50
+        // =============================================
+        // Stok kritis — cek per lot FIFO
+        // =============================================
         $lowStockLots = StokGudang::with('bahanBaku.kitchen')
             ->where('kuantitas', '>', 0)
             ->where('kuantitas', '<=', 50)
@@ -43,15 +24,17 @@ class NotificationController extends Controller
             $kitchenName = $lot->bahanBaku->kitchen->nama ?? 'Pusat';
             $notifications[] = [
                 'type' => 'danger',
-                'message' => "⚠️ Stok Kritis: {$lot->bahanBaku->nama} ({$kitchenName}) tersisa {$lot->kuantitas} unit di lot FIFO"
+                'category' => 'low_stock',
+                'message' => "⚠️ Stok Kritis: {$lot->bahanBaku->nama} ({$kitchenName}) tersisa {$lot->kuantitas} unit di lot FIFO",
+                'url' => null,
+                'created_at' => $lot->updated_at,
             ];
         }
 
         $totalLowStock = $lowStockLots->count();
 
+        // Summary counts
         $summary = [
-            'pending' => $pendingSubmissions->count(),
-            'rejected' => $rejectedSubmissions->count(),
             'low_stock' => $totalLowStock,
         ];
 

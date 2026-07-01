@@ -71,14 +71,7 @@ $lowStockCount = \App\Models\BahanBaku::has('stokGudangs')
     </div>
     @endif
 
-    @if($lowStockCount > 0)
-    <div class="col-md-4">
-        <div class="alert alert-info">
-            <strong>{{ $lowStockCount }}</strong>
-            bahan baku stok hampir habis
-        </div>
-    </div>
-    @endif
+
 
 </div>
 

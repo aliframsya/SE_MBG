@@ -4,6 +4,9 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Event;
+use App\Models\StokGudang;
+use JeroenNoten\LaravelAdminLte\Events\BuildingMenu;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -30,6 +33,29 @@ class AppServiceProvider extends ServiceProvider
             return $user->kitchens()->whereHas('submissions', function ($query) {
                 $query->whereDate('tanggal', '<', '2026-04-01');
             })->exists();
+        });
+
+        // Badge dinamis di ikon lonceng Notifikasi (navbar)
+        Event::listen(BuildingMenu::class, function (BuildingMenu $event) {
+            $lowStockCount = StokGudang::where('kuantitas', '>', 0)
+                ->where('kuantitas', '<=', 50)
+                ->count();
+
+            if ($lowStockCount > 0) {
+                // Hapus item Notifikasi lama (tanpa badge)
+                $event->menu->remove('notifikasi');
+
+                // Tambah ulang dengan badge
+                $event->menu->add([
+                    'key'  => 'notifikasi',
+                    'text' => 'Notifikasi',
+                    'icon' => 'fas fa-bell',
+                    'url'  => 'notifications',
+                    'topnav_right' => true,
+                    'label' => $lowStockCount,
+                    'label_color' => 'danger',
+                ]);
+            }
         });
     }
 }
